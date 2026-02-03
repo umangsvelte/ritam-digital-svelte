@@ -20,17 +20,45 @@ const nextConfig = {
     },
   },
   images: {
+    unoptimized: true,    // allow next image tag to display images
     remotePatterns: [
-      ...[NEXT_PUBLIC_SERVER_URL /* 'https://example.com' */].map((item) => {
-        const url = new URL(item)
-
-        return {
-          hostname: url.hostname,
-          protocol: url.protocol.replace(':', ''),
-        }
-      }),
+      {
+        // Allow images from your local server
+        hostname: 'localhost',
+        protocol: 'http',
+      },
+      {
+        // Allow images from your IP (if needed)
+        hostname: '192.168.15.53',
+        protocol: 'http',
+      },
+      {
+        hostname: '192.168.15.66',
+        protocol: 'http',
+      },
+      // Add your production domain when ready
+      //  {
+      //    hostname: 'hssnl.vaves.app',
+      //    protocol: 'https',
+      //  },
+      // {
+      //   hostname: 'master.d2jkgcwd5y5if.amplifyapp.com',
+      //   protocol: 'https',
+      // }
     ],
   },
+  // images: {
+  //   remotePatterns: [
+  //     ...[NEXT_PUBLIC_SERVER_URL /* 'https://example.com' */].map((item) => {
+  //       const url = new URL(item)
+
+  //       return {
+  //         hostname: url.hostname,
+  //         protocol: url.protocol.replace(':', ''),
+  //       }
+  //     }),
+  //   ],
+  // },
   webpack: (webpackConfig) => {
     webpackConfig.resolve.extensionAlias = {
       '.cjs': ['.cts', '.cjs'],
