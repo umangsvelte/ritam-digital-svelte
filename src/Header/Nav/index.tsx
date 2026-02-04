@@ -94,21 +94,21 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
   const navItems = data?.navItems || []
 
   return (
-    <div className="header-main">
+    <div className="header-main max-w-[84rem] mx-auto flex items-center justify-between px-6">
       {/* Logo */}
       <Link href="/" className="logo">
         {data.logo && typeof data.logo !== 'number' && (
           <img
             src={data.logo.url}
             alt="Site Logo"
-            
+            className="h-auto w-[120px]"
           />
         )}
       </Link>
 
       {/* Navigation */}
       <nav>
-        <ul className="nav-menu">
+        <ul className="nav-menu flex gap-6 items-center">
           {navItems.map((item, i) => {
             const href = resolveLink(item.link)
             const isActive = pathname === href
@@ -116,7 +116,7 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
               Array.isArray(item.subMenu) && item.subMenu.length > 0
 
             return (
-              <li key={item.id}>
+              <li key={item.id} className="relative group">
                 <Link
                   href={href}
                   target={item.link?.newTab ? '_blank' : undefined}

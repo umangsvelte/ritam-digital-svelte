@@ -51,7 +51,7 @@ export async function Footer() {
     navItems = [],
     socialLinks = [],
     copyrightText,
-    notification_logo,
+    // notification_logo,
   } = footerData
 
   return (
@@ -60,11 +60,11 @@ export async function Footer() {
 
         {/* LEFT */}
         <div className="footer-left">
-          {notification_logo && (
+          {/* {notification_logo && (
             <div className="footer-logo mb-2">
               <Media resource={notification_logo} imgClassName="h-10 w-auto" />
             </div>
-          )}
+          )} */}
 
           <div className="footer-copyright">
             {copyrightText && (

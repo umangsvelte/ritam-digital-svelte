@@ -38,7 +38,7 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data }) => {
     //     <HeaderNav data={data} />
     //   </div>
     // </header>
-    <header className="header">
+    <header className="header bg-[#ef7f1b]">
       <HeaderNav data={data} />
     </header>
   )

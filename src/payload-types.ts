@@ -2315,10 +2315,6 @@ export interface Header {
  */
 export interface Footer {
   id: number;
-  /**
-   * Upload size up to 50 MB
-   */
-  notification_logo?: (number | null) | Media;
   navItems?:
     | {
         link: {
@@ -2396,7 +2392,6 @@ export interface HeaderSelect<T extends boolean = true> {
  * via the `definition` "footer_select".
  */
 export interface FooterSelect<T extends boolean = true> {
-  notification_logo?: T;
   navItems?:
     | T
     | {

@@ -22,7 +22,7 @@ const ArticleCategories: CollectionConfig = {
       localized: true,
     },
 
-    // 🔹 Parent category (self reference)
+    //  Parent category (self reference)
     {
       name: 'parent',
       type: 'relationship',

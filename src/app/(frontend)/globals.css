@@ -267,7 +267,9 @@ span.richtext-colored em {
 
 
 /* Footer */
+/* background-color: #292929; */
 .footer {
+    
     background-color: #4a4a4a;
     color: #fff;
     padding: 30px 5%;
@@ -316,6 +318,7 @@ span.richtext-colored em {
     color: #fff;
     font-size: 14px;
     line-height: 1.6;
+    white-space: pre-line;
 }
 
 .footer-copyright p {

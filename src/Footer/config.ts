@@ -9,16 +9,16 @@ export const Footer: GlobalConfig = {
     read: () => true,
   },
   fields: [
-    {
-      name: 'notification_logo',
-      label: 'Notification Logo',
-      type: 'upload',
-      relationTo: 'media',
-      required: false,
-      admin: {
-            description: 'Upload size up to 50 MB',
-          },
-    },
+    // {
+    //   name: 'notification_logo',
+    //   label: 'Notification Logo',
+    //   type: 'upload',
+    //   relationTo: 'media',
+    //   required: false,
+    //   admin: {
+    //         description: 'Upload size up to 50 MB',
+    //       },
+    // },
     {
       name: 'navItems',
       type: 'array',

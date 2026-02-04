@@ -50,7 +50,14 @@ export default function LifestyleArticlesClient({
         </h2>
       </div>
 
-      <div className="article-grid">
+      {articles.length === 0 && !loading && (
+        <div className="text-center py-10 text-gray-500 text-sm uppercase">
+            No articles found
+        </div>
+        )}
+
+      {articles.length > 0 && (
+        <div className="article-grid">
         {articles.map(article => (
           <article key={article.id} className="article-card">
             <div
@@ -80,6 +87,7 @@ export default function LifestyleArticlesClient({
           </article>
         ))}
       </div>
+      )}
 
       {showLoadMore && hasMore && (
         <div className="text-center mt-[30px]">
