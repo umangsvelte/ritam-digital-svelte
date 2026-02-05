@@ -161,6 +161,10 @@ export interface UserAuthOperations {
 export interface Page {
   id: number;
   title: string;
+  /**
+   * If this page is a category listing page, select the category here
+   */
+  category?: (number | null) | ArticleCategory;
   hero: {
     type: 'none' | 'highImpact' | 'mediumImpact' | 'lowImpact';
     richText?: {
@@ -315,8 +319,13 @@ export interface Page {
                 }
               | {
                   title: string;
-                  articleCategory: number | ArticleCategory;
-                  limit?: number | null;
+                  categoryConfigs: {
+                    articleCategory: number | ArticleCategory;
+                    mediaType?: ('image' | 'video') | null;
+                    limit?: number | null;
+                    enableLoadMore?: boolean | null;
+                    id?: string | null;
+                  }[];
                   id?: string | null;
                   blockName?: string | null;
                   blockType: 'lifestyleArticles';
@@ -393,8 +402,13 @@ export interface Page {
                 }
               | {
                   title: string;
-                  articleCategory: number | ArticleCategory;
-                  limit?: number | null;
+                  categoryConfigs: {
+                    articleCategory: number | ArticleCategory;
+                    mediaType?: ('image' | 'video') | null;
+                    limit?: number | null;
+                    enableLoadMore?: boolean | null;
+                    id?: string | null;
+                  }[];
                   id?: string | null;
                   blockName?: string | null;
                   blockType: 'lifestyleArticles';
@@ -430,8 +444,13 @@ export interface Page {
       }
     | {
         title: string;
-        articleCategory: number | ArticleCategory;
-        limit?: number | null;
+        categoryConfigs: {
+          articleCategory: number | ArticleCategory;
+          mediaType?: ('image' | 'video') | null;
+          limit?: number | null;
+          enableLoadMore?: boolean | null;
+          id?: string | null;
+        }[];
         id?: string | null;
         blockName?: string | null;
         blockType: 'lifestyleArticles';
@@ -481,6 +500,20 @@ export interface Page {
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "articleCategories".
+ */
+export interface ArticleCategory {
+  id: number;
+  name: string;
+  /**
+   * Select a parent category to create a subcategory
+   */
+  parent?: (number | null) | ArticleCategory;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1084,20 +1117,6 @@ export interface Article {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "articleCategories".
- */
-export interface ArticleCategory {
-  id: number;
-  name: string;
-  /**
-   * Select a parent category to create a subcategory
-   */
-  parent?: (number | null) | ArticleCategory;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
 export interface Redirect {
@@ -1382,6 +1401,7 @@ export interface PayloadMigration {
  */
 export interface PagesSelect<T extends boolean = true> {
   title?: T;
+  category?: T;
   hero?:
     | T
     | {
@@ -1519,8 +1539,15 @@ export interface PagesSelect<T extends boolean = true> {
                       | T
                       | {
                           title?: T;
-                          articleCategory?: T;
-                          limit?: T;
+                          categoryConfigs?:
+                            | T
+                            | {
+                                articleCategory?: T;
+                                mediaType?: T;
+                                limit?: T;
+                                enableLoadMore?: T;
+                                id?: T;
+                              };
                           id?: T;
                           blockName?: T;
                         };
@@ -1606,8 +1633,15 @@ export interface PagesSelect<T extends boolean = true> {
                       | T
                       | {
                           title?: T;
-                          articleCategory?: T;
-                          limit?: T;
+                          categoryConfigs?:
+                            | T
+                            | {
+                                articleCategory?: T;
+                                mediaType?: T;
+                                limit?: T;
+                                enableLoadMore?: T;
+                                id?: T;
+                              };
                           id?: T;
                           blockName?: T;
                         };
@@ -1645,8 +1679,15 @@ export interface PagesSelect<T extends boolean = true> {
           | T
           | {
               title?: T;
-              articleCategory?: T;
-              limit?: T;
+              categoryConfigs?:
+                | T
+                | {
+                    articleCategory?: T;
+                    mediaType?: T;
+                    limit?: T;
+                    enableLoadMore?: T;
+                    id?: T;
+                  };
               id?: T;
               blockName?: T;
             };

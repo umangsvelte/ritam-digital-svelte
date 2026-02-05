@@ -71,6 +71,16 @@ export const Pages: CollectionConfig<'pages'> = {
       required: true,
     },
     {
+      name: 'category',
+      label: 'Category for this page',
+      type: 'relationship',
+      relationTo: 'articleCategories',
+      required: false,
+      admin: {
+        description: 'If this page is a category listing page, select the category here',
+      },
+    },
+    {
       type: 'tabs',
       tabs: [
         {

@@ -11,20 +11,47 @@ export const LifestyleArticlesBlock: Block = {
       name: 'title',
       type: 'text',
       required: true,
-      defaultValue: 'Lifestyle',
     },
+
     {
-      name: 'articleCategory',
-      type: 'relationship',
-      relationTo: 'articleCategories', // change if your category collection name is different
+      name: 'categoryConfigs',
+      label: 'Category Configurations',
+      type: 'array',
       required: true,
-    },
-    {
-      name: 'limit',
-      type: 'number',
-      defaultValue: 3,
-      min: 1,
-      max: 12,
+      minRows: 1,
+      fields: [
+        {
+          name: 'articleCategory',
+          label: 'Category',
+          type: 'relationship',
+          relationTo: 'articleCategories',
+          required: true,
+        },
+        {
+          name: 'mediaType',
+          label: 'Media Type',
+          type: 'select',
+          dbName: 'media_type',
+          options: [
+            { label: 'Image', value: 'image' },
+            { label: 'Video', value: 'video' },
+          ],
+        },
+        {
+          name: 'limit',
+          type: 'number',
+          // required: true,
+          min: 1,
+          max: 12,
+          defaultValue: 3,
+        },
+        {
+          name: 'enableLoadMore',
+          label: 'Enable Load More',
+          type: 'checkbox',
+          defaultValue: true,
+        },
+      ],
     },
   ],
 }

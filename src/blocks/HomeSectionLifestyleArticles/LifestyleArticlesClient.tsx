@@ -3,103 +3,140 @@
 import { useState } from 'react'
 import Link from 'next/link'
 
-type Props = {
-  title: string
+type Section = {
   categoryId: string
+  categoryName: string
+  mediaType?: 'image' | 'video'
   initialArticles: any[]
   totalDocs: number
-  initialLimit: number
-  showLoadMore: boolean
+  limit: number
+  enableLoadMore: boolean
+}
+
+type Props = {
+  title: string
+  sections: Section[]
 }
 
 export default function LifestyleArticlesClient({
   title,
-  categoryId,
-  initialArticles,
-  totalDocs,
-  initialLimit,
-  showLoadMore,
+  sections,
 }: Props) {
-  const [articles, setArticles] = useState(initialArticles)
-  const [page, setPage] = useState(1)
-  const [loading, setLoading] = useState(false)
+  
+  const [state, setState] = useState(
+    sections.map(section => ({
+      ...section,
+      articles: section.initialArticles,
+      page: 1,
+      loading: false,
+    }))
+  )
 
-  const hasMore = articles.length < totalDocs
-
-  const loadMore = async () => {
-    setLoading(true)
-
-    const res = await fetch(
-    //   `/api/articles?category=${categoryId}&page=${page + 1}&limit=${initialLimit}`
-    `/api/load-articles?category=${categoryId}&page=${page + 1}&limit=${initialLimit}`
-
+  const loadMore = async (index: number) => {
+    setState(prev =>
+      prev.map((s, i) =>
+        i === index ? { ...s, loading: true } : s
+      )
     )
 
+    const section = state[index]
+
+    const params = new URLSearchParams({
+      category: section.categoryId,
+      page: String(section.page + 1),
+      limit: String(section.limit),
+    })
+
+    if (section.mediaType) {
+      params.append('mediaType', section.mediaType)
+    }
+
+    const res = await fetch(`/api/load-articles?${params}`)
     const data = await res.json()
 
-    setArticles(prev => [...prev, ...data.docs])
-    setPage(prev => prev + 1)
-    setLoading(false)
+    setState(prev =>
+      prev.map((s, i) =>
+        i === index
+          ? {
+              ...s,
+              articles: [...s.articles, ...data.docs],
+              page: s.page + 1,
+              loading: false,
+            }
+          : s
+      )
+    )
   }
 
+
   return (
-    <section className="content-section mx-auto px-4 py-6 ">
-      <div className="section-header">
-        <h2 className="section-title">
-          <Link href="#">{title}</Link>
-        </h2>
+    <section className="content-section mx-auto px-4 py-6">
+      <div className="section-header mb-6">
+        <h2 className="section-title">{title}</h2>
       </div>
 
-      {articles.length === 0 && !loading && (
-        <div className="text-center py-10 text-gray-500 text-sm uppercase">
-            No articles found
-        </div>
-        )}
+      {state.map((section, index) => {
+        const hasMore = section.enableLoadMore && section.articles.length < section.totalDocs
 
-      {articles.length > 0 && (
-        <div className="article-grid">
-        {articles.map(article => (
-          <article key={article.id} className="article-card">
-            <div
-              className="article-card-image"
-              style={{
-                backgroundImage: `url(${
-                  article.featuredImage?.url ||
-                  article.videoThumbnail?.url ||
-                  ''
-                })`,
-              }}
-            >
-              {article.articleType && (
-                <span className="article-card-category">
-                  {article.articleType?.name}
-                </span>
-              )}
-            </div>
+        return (
+          <div key={section.categoryId}>
+            {/* <h3 className="text-lg font-bold mb-4 uppercase">
+              {section.categoryName}
+            </h3> */}
 
-            <div className="article-card-content">
-              <h3 className="article-card-headline">
-                <Link href={`/articles/${article.slug}`}>
-                  {article.title}
-                </Link>
-              </h3>
-            </div>
-          </article>
-        ))}
-      </div>
-      )}
+            {section.articles.length === 0 && !section.loading && (
+              <div className="text-center py-8 text-gray-500 text-sm uppercase">
+                No articles found
+              </div>
+            )}
 
-      {showLoadMore && hasMore && (
-        <div className="text-center mt-[30px]">
-          <button
-            onClick={loadMore}
-            disabled={loading}
-            className="jeg_block_loadmore inline-block px-[30px] py-[12px] bg-[#f1811d] text-white font-semibold uppercase rounded transition"
-          >
-            {loading ? 'Loading...' : 'Load More'}
-          </button>
-        </div>
-      )}
+            {section.articles.length > 0 && (
+              <div className="article-grid">
+                {section.articles.map(article => (
+                  <article key={article.id} className="article-card">
+                    <div
+                      className="article-card-image"
+                      style={{
+                        backgroundImage: `url(${
+                          article.featuredImage?.url ||
+                          article.videoThumbnail?.url ||
+                          ''
+                        })`,
+                      }}
+                    >
+                      {article.articleType && (
+                        <span className="article-card-category">
+                          {article.articleType.name}
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="article-card-content">
+                      <h3 className="article-card-headline">
+                        <Link href={`/articles/${article.slug}`}>
+                          {article.title}
+                        </Link>
+                      </h3>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            )}
+
+            {hasMore && (
+              <div className="text-center mt-6">
+                <button
+                  onClick={() => loadMore(index)}
+                  disabled={section.loading}
+                  className="jeg_block_loadmore inline-block px-[30px] py-[12px] bg-[#f1811d] text-white font-semibold uppercase rounded transition"
+                >
+                  {section.loading ? 'Loading...' : 'Load More'}
+                </button>
+              </div>
+            )}
+          </div>
+        )
+      })}
     </section>
   )
 }

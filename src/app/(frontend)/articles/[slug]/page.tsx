@@ -11,9 +11,30 @@ type PageProps = {
   params: Promise<{ slug: string }> // params is now a Promise
 }
 
+function getEmbedUrl(url: string) {
+  if (!url) return null
+
+  // YouTube
+  if (url.includes('youtube.com') || url.includes('youtu.be')) {
+    const videoId =
+      url.split('v=')[1]?.split('&')[0] ||
+      url.split('youtu.be/')[1]
+    return `https://www.youtube.com/embed/${videoId}`
+  }
+
+  // Vimeo
+  if (url.includes('vimeo.com')) {
+    const videoId = url.split('vimeo.com/')[1]
+    return `https://player.vimeo.com/video/${videoId}`
+  }
+
+  return null
+}
+
 export default async function ArticleDetailPage(props: { params: Promise<{ slug: string }> }) {
   const { slug } = await props.params
   const payload = await getPayload({ config: configPromise })
+
 
   /* ---------------------------------------
      MAIN ARTICLE
@@ -28,6 +49,27 @@ export default async function ArticleDetailPage(props: { params: Promise<{ slug:
 
   const article = articleRes.docs[0]
   if (!article) return notFound()
+
+  /* ---------------------------------------
+     GET PAGE FOR CATEGORY (if any)
+  --------------------------------------- */
+  let categoryPage = null
+
+  if (article.articleType) {
+    const pageRes = await payload.find({
+      collection: 'pages',
+      where: {
+        category: {
+          equals: typeof article.articleType === 'object'
+            ? article.articleType.id
+            : article.articleType,
+        },
+      },
+      limit: 1,
+    })
+
+    categoryPage = pageRes.docs[0] || null
+  }
 
   const formattedDate = new Date(article.publishedDate).toLocaleString('en-IN', {
     day: '2-digit',
@@ -77,14 +119,11 @@ export default async function ArticleDetailPage(props: { params: Promise<{ slug:
         <div className="breadcrumbs">
           <span><Link href="/">Home</Link></span>
           <i className="fa fa-angle-right" />
-          {article.articleType && (
+          {article.articleType && categoryPage && (
             <>
               <span>
-                {/* <Link href={`/category/${article.articleType.slug}`}>
+                <Link href={`/${categoryPage.slug}`}>
                   {article.articleType.name}
-                </Link> */}
-                <Link href={`/nation`}>
-                  Nation
                 </Link>
               </span>
               <i className="fa fa-angle-right" />
@@ -116,8 +155,8 @@ export default async function ArticleDetailPage(props: { params: Promise<{ slug:
           </div>
         </div>
 
-        {/* Featured Image */}
-        {article.featuredImage?.url && (
+        {/* Featured Image and Video*/}
+        {article.mediaType === 'image' && article.featuredImage?.url && (
           <div className="featured-image">
             <img
               src={article.featuredImage.url}
@@ -130,6 +169,33 @@ export default async function ArticleDetailPage(props: { params: Promise<{ slug:
             )}
           </div>
         )}
+
+        {article.mediaType === 'video' && article.featuredVideoUrl && (
+          <div className="featured-video">
+            <iframe
+              src={getEmbedUrl(article.featuredVideoUrl)}
+              width="100%"
+              height="450"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              title={article.title}
+            />
+          </div>
+        )}
+        {/* {article.featuredImage?.url && (
+          <div className="featured-image">
+            <img
+              src={article.featuredImage.url}
+              alt={article.featuredImage.caption || article.title}
+            />
+            {article.featuredImage.caption && (
+              <p className="image-caption">
+                {article.featuredImage.caption}
+              </p>
+            )}
+          </div>
+        )} */}
 
         {/* Content */}
         <div className="article-content">
@@ -190,7 +256,7 @@ export default async function ArticleDetailPage(props: { params: Promise<{ slug:
                 <article key={rel.id} className="related-article">
                   <div className="related-thumb">
                     <Link href={`/articles/${rel.slug}`}>
-                      <img src={rel.featuredImage?.url} alt={rel.title} />
+                      <img src={rel.featuredImage?.url || rel.videoThumbnail?.url || ''} alt={rel.title} />
                     </Link>
                     <div className="related-category">
                       <span><a href="#">{rel.articleType?.name}</a></span>
