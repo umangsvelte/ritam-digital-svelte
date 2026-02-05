@@ -93,7 +93,9 @@ export default function LifestyleArticlesClient({
             {section.articles.length > 0 && (
               <div className="article-grid">
                 {section.articles.map(article => (
+                  
                   <article key={article.id} className="article-card">
+                    <Link href={`/articles/${article.slug}`}>
                     <div
                       className="article-card-image"
                       style={{
@@ -113,12 +115,14 @@ export default function LifestyleArticlesClient({
 
                     <div className="article-card-content">
                       <h3 className="article-card-headline">
-                        <Link href={`/articles/${article.slug}`}>
+                        {/* <Link href={`/articles/${article.slug}`}> */}
                           {article.title}
-                        </Link>
+                        {/* </Link> */}
                       </h3>
                     </div>
+                    </Link>
                   </article>
+                  
                 ))}
               </div>
             )}
