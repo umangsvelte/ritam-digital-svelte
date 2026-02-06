@@ -31,6 +31,21 @@ function getEmbedUrl(url: string) {
   return null
 }
 
+function buildBreadcrumb(page: any) {
+  const crumbs = []
+
+  let current = page
+  while (current) {
+    crumbs.unshift({
+      title: current.title,
+      slug: current.slug,
+    })
+    current = current.parent
+  }
+
+  return crumbs
+}
+
 export default async function ArticleDetailPage(props: { params: Promise<{ slug: string }> }) {
   const { slug } = await props.params
   const payload = await getPayload({ config: configPromise })
@@ -53,23 +68,45 @@ export default async function ArticleDetailPage(props: { params: Promise<{ slug:
   /* ---------------------------------------
      GET PAGE FOR CATEGORY (if any)
   --------------------------------------- */
-  let categoryPage = null
+  // let categoryPage = null
 
-  if (article.articleType) {
-    const pageRes = await payload.find({
-      collection: 'pages',
-      where: {
-        category: {
-          equals: typeof article.articleType === 'object'
-            ? article.articleType.id
-            : article.articleType,
-        },
+  // if (article.articleType) {
+  //   const pageRes = await payload.find({
+  //     collection: 'pages',
+  //     where: {
+  //       category: {
+  //         equals: typeof article.articleType === 'object'
+  //           ? article.articleType.id
+  //           : article.articleType,
+  //       },
+  //     },
+  //     limit: 1,
+  //   })
+
+  //   categoryPage = pageRes.docs[0] || null
+  // }
+
+  const categoryId =
+  typeof article.articleType === 'object'
+    ? article.articleType.id
+    : article.articleType
+
+  const pageRes = await payload.find({
+    collection: 'pages',
+    where: {
+      category: {
+        equals: categoryId,
       },
-      limit: 1,
-    })
+    },
+    depth: 2, // VERY IMPORTANT
+    limit: 1,
+  })
 
-    categoryPage = pageRes.docs[0] || null
-  }
+  const categoryPage = pageRes.docs[0] || null
+
+  const breadcrumbs = categoryPage
+  ? buildBreadcrumb(categoryPage)
+  : []
 
   const formattedDate = new Date(article.publishedDate).toLocaleString('en-IN', {
     day: '2-digit',
@@ -119,16 +156,14 @@ export default async function ArticleDetailPage(props: { params: Promise<{ slug:
         <div className="breadcrumbs">
           <span><Link href="/">Home</Link></span>
           <i className="fa fa-angle-right" />
-          {article.articleType && categoryPage && (
-            <>
-              <span>
-                <Link href={`/${categoryPage.slug}`}>
-                  {article.articleType.name}
-                </Link>
-              </span>
+          {breadcrumbs.map((crumb, index) => (
+            <span key={crumb.slug}>
               <i className="fa fa-angle-right" />
-            </>
-          )}
+              <Link href={`/${crumb.slug}`}>
+                {crumb.title}
+              </Link>
+            </span>
+          ))}
           {/* <span>{article.title}</span> */}
         </div>
 

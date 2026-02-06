@@ -160,6 +160,7 @@ export interface UserAuthOperations {
  */
 export interface Page {
   id: number;
+  parent?: (number | null) | Page;
   title: string;
   /**
    * If this page is a category listing page, select the category here
@@ -1400,6 +1401,7 @@ export interface PayloadMigration {
  * via the `definition` "pages_select".
  */
 export interface PagesSelect<T extends boolean = true> {
+  parent?: T;
   title?: T;
   category?: T;
   hero?:

@@ -66,6 +66,12 @@ export const Pages: CollectionConfig<'pages'> = {
   },
   fields: [
     {
+      name: 'parent',
+      type: 'relationship',
+      relationTo: 'pages',
+      required: false,
+    },
+    {
       name: 'title',
       type: 'text',
       required: true,

@@ -111,6 +111,13 @@ export default function LifestyleArticlesClient({
                           {article.articleType.name}
                         </span>
                       )}
+
+                      {/* ▶ Play icon only for video */}
+                      {article.mediaType === 'video' && (
+                        <span className="article-card-play">
+                          <i className="fa fa-play" />
+                        </span>
+                      )}
                     </div>
 
                     <div className="article-card-content">

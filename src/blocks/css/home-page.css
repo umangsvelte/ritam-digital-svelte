@@ -12,7 +12,7 @@ body {
 }
 
 /* Header - Orange */
-.header {
+/* .header {
     background-color: #f1811d;
     color: #fff;
     position: sticky;
@@ -81,7 +81,7 @@ body {
     font-size: 20px;
     cursor: pointer;
     color: #fff;
-}
+} */
 
 /* Container */
 /* .container {
@@ -2197,22 +2197,3 @@ body {
     }
 }
 
-@media (max-width: 768px) {
-    .nav-menu {
-        flex-wrap: wrap;
-        gap: 15px;
-    }
-
-    .header-main {
-        flex-direction: column;
-        gap: 15px;
-    }
-
-    .featured-slider {
-        height: 300px;
-    }
-
-    .featured-headline {
-        font-size: 20px;
-    }
-}
