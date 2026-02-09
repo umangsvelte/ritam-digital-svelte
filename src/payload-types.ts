@@ -354,6 +354,30 @@ export interface Page {
                   blockName?: string | null;
                   blockType: 'videoPlaylist';
                 }
+              | {
+                  title?: string | null;
+                  /**
+                   * Articles per page
+                   */
+                  limit?: number | null;
+                  id?: string | null;
+                  blockName?: string | null;
+                  blockType: 'searchResults';
+                }
+              | {
+                  title: string;
+                  /**
+                   * Choose which type of articles should appear in this section.
+                   */
+                  mediaType?: ('image' | 'video' | 'all') | null;
+                  /**
+                   * This section is automatically generated. It displays the latest 10 articles sorted by published date.
+                   */
+                  latestNewsInfo?: string | null;
+                  id?: string | null;
+                  blockName?: string | null;
+                  blockType: 'latestNews';
+                }
             )[]
           | null;
         rightColumn?:
@@ -436,6 +460,30 @@ export interface Page {
                   id?: string | null;
                   blockName?: string | null;
                   blockType: 'videoPlaylist';
+                }
+              | {
+                  title?: string | null;
+                  /**
+                   * Articles per page
+                   */
+                  limit?: number | null;
+                  id?: string | null;
+                  blockName?: string | null;
+                  blockType: 'searchResults';
+                }
+              | {
+                  title: string;
+                  /**
+                   * Choose which type of articles should appear in this section.
+                   */
+                  mediaType?: ('image' | 'video' | 'all') | null;
+                  /**
+                   * This section is automatically generated. It displays the latest 10 articles sorted by published date.
+                   */
+                  latestNewsInfo?: string | null;
+                  id?: string | null;
+                  blockName?: string | null;
+                  blockType: 'latestNews';
                 }
             )[]
           | null;
@@ -1579,6 +1627,23 @@ export interface PagesSelect<T extends boolean = true> {
                           id?: T;
                           blockName?: T;
                         };
+                    searchResults?:
+                      | T
+                      | {
+                          title?: T;
+                          limit?: T;
+                          id?: T;
+                          blockName?: T;
+                        };
+                    latestNews?:
+                      | T
+                      | {
+                          title?: T;
+                          mediaType?: T;
+                          latestNewsInfo?: T;
+                          id?: T;
+                          blockName?: T;
+                        };
                   };
               rightColumn?:
                 | T
@@ -1670,6 +1735,23 @@ export interface PagesSelect<T extends boolean = true> {
                       | {
                           articleCategory?: T;
                           limit?: T;
+                          id?: T;
+                          blockName?: T;
+                        };
+                    searchResults?:
+                      | T
+                      | {
+                          title?: T;
+                          limit?: T;
+                          id?: T;
+                          blockName?: T;
+                        };
+                    latestNews?:
+                      | T
+                      | {
+                          title?: T;
+                          mediaType?: T;
+                          latestNewsInfo?: T;
                           id?: T;
                           blockName?: T;
                         };

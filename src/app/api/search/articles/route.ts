@@ -1,20 +1,57 @@
+// import { NextResponse } from 'next/server'
+// import { getPayload } from 'payload'
+// import configPromise from '@payload-config'
+
+// export async function GET(req: Request) {
+//   const { searchParams } = new URL(req.url)
+//   const query = searchParams.get('q')
+//   const limit = searchParams.get('limit') || '10'
+
+//   if (!query || query.length < 3) {
+//     return NextResponse.json({ docs: [] })
+//   }
+
+//   const payload = await getPayload({ config: configPromise })
+
+//   const result = await payload.find({
+//     collection: 'articles',
+//     limit: Number(limit),
+//     where: {
+//       title: {
+//         like: query,
+//       },
+//     },
+//     depth: 1,
+//   })
+
+//   return NextResponse.json(result)
+// }
 import { NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 import configPromise from '@payload-config'
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url)
+
   const query = searchParams.get('q')
+  const limit = Number(searchParams.get('limit') || 10)
+  const page = Number(searchParams.get('page') || 1)
 
   if (!query || query.length < 3) {
-    return NextResponse.json({ docs: [] })
+    return NextResponse.json({
+      docs: [],
+      totalDocs: 0,
+      page,
+      totalPages: 0,
+    })
   }
 
   const payload = await getPayload({ config: configPromise })
 
   const result = await payload.find({
     collection: 'articles',
-    limit: 10,
+    limit,
+    page, //  THIS IS THE KEY FIX
     where: {
       title: {
         like: query,

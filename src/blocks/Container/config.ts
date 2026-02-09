@@ -9,6 +9,8 @@ import { LifestyleArticlesBlock } from '@/blocks/HomeSectionLifestyleArticles/co
 import { HomeSectionBusinessOpinion } from '@/blocks/HomeSectionBusinessOpinion/config'
 import { DontMissBlock } from '@/blocks/NationSectionDontMiss/config'
 import { VideoPlaylistBlock } from '@/blocks/NationSectionVideoPlaylist/config'
+import { SearchResultsBlock } from '@/blocks/SearchResults/config'
+import { LatestNewsBlock } from '@/blocks/LatestNews/config'
 
 export const ContainerBlock: Block = {
   slug: 'container',
@@ -61,6 +63,8 @@ export const ContainerBlock: Block = {
         HomeSectionBusinessOpinion,
         DontMissBlock,
         VideoPlaylistBlock,
+        SearchResultsBlock,
+        LatestNewsBlock,
       ],
     },
 
@@ -82,6 +86,8 @@ export const ContainerBlock: Block = {
         HomeSectionBusinessOpinion,
         DontMissBlock,
         VideoPlaylistBlock,
+        SearchResultsBlock,
+        LatestNewsBlock,
       ],
     },
   ],

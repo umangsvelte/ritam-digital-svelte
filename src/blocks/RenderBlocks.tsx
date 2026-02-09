@@ -21,6 +21,8 @@ import { HomeSectionBusinessOpinionComponent } from '@/blocks/HomeSectionBusines
 import { LatestNationalNewsComponent } from '@/blocks/NationSectionLatestNationalNews/Component'
 import { DontMissComponent } from '@/blocks/NationSectionDontMiss/Component'
 import { VideoPlaylistComponent } from '@/blocks/NationSectionVideoPlaylist/Component'
+import  SearchResultsBlock  from '@/blocks/SearchResults/Component'
+import  LatestNewsComponent  from '@/blocks/LatestNews/Component'
 
 const blockComponents = {
   archive: ArchiveBlock,
@@ -41,6 +43,8 @@ const blockComponents = {
   latestNationalNews:LatestNationalNewsComponent,
   dontMiss:DontMissComponent,
   videoPlaylist:VideoPlaylistComponent,
+  searchResults:SearchResultsBlock,
+  latestNews:LatestNewsComponent,
 }
 
 const RichTextRenderer = ({ content }: { content: any }) => {

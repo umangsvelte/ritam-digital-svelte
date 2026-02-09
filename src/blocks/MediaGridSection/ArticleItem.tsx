@@ -1,3 +1,5 @@
+import Link from 'next/link'
+
 const ArticleItem  = ({ articles, articleCategory }) => {
   const mid = Math.ceil(articles.length / 2)
   const leftCol = articles?.slice(0, mid)
@@ -19,6 +21,10 @@ const ArticleItem  = ({ articles, articleCategory }) => {
           <div key={idx} className="nation-articles-column">
             {col?.map(article => (
               <article key={article.id} className="jeg_post">
+                <Link
+                    href={`/articles/${article.slug}`}
+                    className="flex gap-3 hover:text-[#ef7f1b]"
+                  >
                 <div className="jeg_thumb">
                   <img
                     src={article.featuredImage?.url}
@@ -33,6 +39,7 @@ const ArticleItem  = ({ articles, articleCategory }) => {
                     {article.title}
                   </h3>
                 </div>
+                </Link>
               </article>
             ))}
           </div>
