@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react'
+import React, { Fragment, Suspense } from 'react'
 
 import type { Page } from '@/payload-types'
 
@@ -82,11 +82,35 @@ export const RenderBlocks: React.FC<{
               }, {})
 
               if(processedProps){
+                if (blockType === 'searchResults') {
+                  return (
+                    <Suspense
+                      key={index}
+                      fallback={<div className="py-10 text-center">Loading search results…</div>}
+                    >
+                      <Block
+                        {...processedProps}
+                        blockType={blockType}
+                        disableInnerContainer
+                      />
+                    </Suspense>
+                  )
+                }
+
                 return (
                   <div className="" key={index}>
-                    <Block {...processedProps} blockType={blockType} disableInnerContainer />
+                    <Block
+                      {...processedProps}
+                      blockType={blockType}
+                      disableInnerContainer
+                    />
                   </div>
                 )
+                // return (
+                //   <div className="" key={index}>
+                //     <Block {...processedProps} blockType={blockType} disableInnerContainer />
+                //   </div>
+                // )
               }
             }
           }
