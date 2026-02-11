@@ -48,7 +48,7 @@ export const HomeSectionBusinessOpinionComponent = async ({
         </h2>
       </div>
 
-      <div className="article-grid">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {res.docs.map((article) => {
           const imageUrl =
             typeof article.featuredImage === 'object'

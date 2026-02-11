@@ -47,11 +47,11 @@ export const EntertainmentArticlesBlockComponent = async ({
         </h3>
       </div>
 
-      <div className="jeg_posts jeg_block_container">
+      <div className="jeg_posts jeg_block_container flex flex-col gap-4">
         {docs.map((article) => (
           <article
             key={article.id}
-            className="jeg_post jeg_pl_md_3 format-standard"
+            className="jeg_post jeg_pl_md_3 format-standard flex gap-3 items-start"
           >
             <div className="jeg_thumb">
               <Link href={`/articles/${article.slug}`}>

@@ -40,74 +40,69 @@ export const SportsArticlesBlockComponent = async ({
   const [featured, ...smallArticles] = res.docs
 
   return (
-    <section className="sports-section jeg_col_2o3">
-      {/* Heading */}
-      <div className="jeg_block_heading jeg_block_heading_6">
-        <h3 className="jeg_block_title">
-          <span>{title}</span>
-        </h3>
-      </div>
+  <section className="sports-section jeg_col_2o3">
+    {/* Heading */}
+    <div className="jeg_block_heading jeg_block_heading_6">
+      <h3 className="jeg_block_title">
+        <span>{title}</span>
+      </h3>
+    </div>
 
-      <div className="jeg_block_container">
-        <div className="jeg_posts row">
-          {/* FEATURED ARTICLE */}
-          {featured && (
-            <article className="jeg_post jeg_pl_lg_1 col-sm-6 format-standard">
-              <div className="jeg_thumb">
-                <Link href={`/articles/${featured.slug}`}>
-                  <div className="thumbnail-container">
-                    <Image
-                      src={featured.featuredImage?.url}
-                      alt={featured.title}
-                      width={360}
-                      height={180}
-                    />
-                  </div>
+    <div className="jeg_block_container">
+      <div className="flex flex-col md:flex-row gap-6">
+        
+        {/* FEATURED ARTICLE */}
+        {featured && (
+          <article className="w-full md:w-1/2">
+            <Link href={`/articles/${featured.slug}`}>
+              <div className="w-full overflow-hidden rounded">
+                <Image
+                  src={featured.featuredImage?.url}
+                  alt={featured.title}
+                  width={800}
+                  height={500}
+                  className="w-full h-auto object-cover"
+                />
+              </div>
+            </Link>
+
+            <h3 className="mt-3 text-base md:text-lg font-semibold leading-snug">
+              <Link href={`/articles/${featured.slug}`}>
+                {featured.title}
+              </Link>
+            </h3>
+          </article>
+        )}
+
+        {/* SMALL ARTICLES */}
+        <div className="w-full md:w-1/2 flex flex-col gap-4">
+          {smallArticles.map((article) => (
+            <article key={article.id} className="flex gap-3">
+              
+              <Link href={`/articles/${article.slug}`}>
+                <div className="w-24 h-16 flex-shrink-0 overflow-hidden rounded">
+                  <Image
+                    src={article.featuredImage?.url}
+                    alt={article.title}
+                    width={150}
+                    height={100}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </Link>
+
+              <h3 className="text-sm md:text-base font-medium leading-snug">
+                <Link href={`/articles/${article.slug}`}>
+                  {article.title}
                 </Link>
-              </div>
-
-              <div className="jeg_postblock_content">
-                <h3 className="jeg_post_title">
-                  <Link href={`/articles/${featured.slug}`}>
-                    {featured.title}
-                  </Link>
-                </h3>
-              </div>
+              </h3>
             </article>
-          )}
-
-          {/* SMALL ARTICLES */}
-          <div className="jeg_postsmall col-sm-6">
-            {smallArticles.map((article) => (
-              <article
-                key={article.id}
-                className="jeg_post jeg_pl_sm format-standard"
-              >
-                <div className="jeg_thumb">
-                  <Link href={`/articles/${article.slug}`}>
-                    <div className="thumbnail-container">
-                      <Image
-                        src={article.featuredImage?.url}
-                        alt={article.title}
-                        width={120}
-                        height={86}
-                      />
-                    </div>
-                  </Link>
-                </div>
-
-                <div className="jeg_postblock_content">
-                  <h3 className="jeg_post_title">
-                    <Link href={`/articles/${article.slug}`}>
-                      {article.title}
-                    </Link>
-                  </h3>
-                </div>
-              </article>
-            ))}
-          </div>
+          ))}
         </div>
+
       </div>
-    </section>
-  )
+    </div>
+  </section>
+)
+
 }

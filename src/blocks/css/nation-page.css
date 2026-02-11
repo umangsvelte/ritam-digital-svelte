@@ -660,20 +660,105 @@
         width: 140px !important;
         height: 80px !important;
     }
+    .yt-list-wrapper {
+        max-height: 300px;
+    }
+
+    /* .nation-articles-wrapper {
+        grid-template-columns: 1fr !important;
+    } */
+
+    .yt-list {
+        max-height: none;
+        overflow-y: visible;
+    }
 }
 
 @media (max-width: 768px) {
+      .jeg_postblock_8 .jeg_posts,
+  .jeg_posts.jeg_load_more_flag {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    gap: 20px !important;
+  }
+  
+  /* Make each article full width */
+  .jeg_postblock_8 .jeg_post.jeg_pl_md_1 {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 0 0 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  
+  /* Make thumbnail container full width */
+  .jeg_postblock_8 .jeg_thumb,
+  .jeg_postblock_8 .thumbnail-container.size-500 {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  
+  /* Ensure image stretches to full width */
+  .jeg_postblock_8 .thumbnail-container.size-500 {
+    height: auto !important;
+    aspect-ratio: 2/1;
+    min-height: 180px;
+  }
+  
+  .jeg_postblock_8 .thumbnail-container img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+  }
+  
+  /* Fix for parent containers that might restrict width */
+  .wpb_column.vc_column_container.vc_col-sm-8,
+  .wpb_column.vc_column_container.vc_col-sm-8 > .jeg_wrapper,
+  .wpb_column.vc_column_container.vc_col-sm-8 .wpb_wrapper,
+  .jeg_postblock_8 {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+    .yt-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .yt-thumb {
+        width: 110px;
+        height: 70px;
+        min-width: 110px;
+        background-size: cover;
+        background-position: center;
+        border-radius: 4px;
+    }
+
+    .yt-meta {
+        flex: 1;
+        min-width: 0;   /* VERY IMPORTANT */
+    }
+    .yt-current {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    .yt-current-title {
+        margin: 0;
+        width: 100%;
+    }
+    .yt-current-bg-icon {
+        display: none;
+    }
     .jeg_postblock_8 .jeg_posts {
         grid-template-columns: 1fr;
     }
-    .politics-section .yt-item {
-        flex-direction: column !important;
-        padding: 10px !important;
-    }
-    .politics-section .yt-thumb {
-        width: 100% !important;
-        height: 180px !important;
-    }
+    
     .politics-section .yt-item-indicator {
         display: none;
     }

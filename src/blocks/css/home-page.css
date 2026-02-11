@@ -700,16 +700,32 @@ body {
     gap: 30px;
     margin-bottom: 40px;
     align-items: stretch;
-    height: 600px !important; 
+    height: 600px; 
 }
 
 @media (max-width: 1024px) {
     .videos-nation-wrapper {
         flex-direction: column;
+        height: auto;
+    }
+    .top-videos-column,
+    .nation-column {
+        flex: none;
+        width: 100%;
+        height: auto;
+    }
+
+    .yt-list-wrapper {
+        max-height: 300px;
     }
 
     .nation-articles-wrapper {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr !important;
+    }
+
+    .yt-list {
+        max-height: none;
+        overflow-y: visible;
     }
 }
 
@@ -1036,17 +1052,23 @@ body {
 
 @media (max-width: 768px) {
     .yt-item {
-        flex-wrap: wrap;
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
     }
+
     .yt-thumb {
-        width: 100%;
-        height: 150px;
-        margin-right: 0;
-        margin-bottom: 10px;
+        width: 110px;
+        height: 70px;
+        min-width: 110px;
+        background-size: cover;
+        background-position: center;
+        border-radius: 4px;
     }
+
     .yt-meta {
-        width: 100%;
-        padding-right: 0;
+        flex: 1;
+        min-width: 0;   /* VERY IMPORTANT */
     }
     .yt-current {
         flex-direction: column;
@@ -1064,6 +1086,56 @@ body {
         font-size: 18px;
         padding: 8px 12px;
     }
+    /* Stack sections */
+  .world-politics-wrapper {
+    flex-direction: column !important;
+  }
+
+  .world-section,
+  .politics-section {
+    width: 100% !important;
+    flex: 0 0 100% !important;
+  }
+
+  /* Fix article layout */
+  .jeg_post {
+    display: flex !important;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  /* Fix thumbnail */
+  .jeg_thumb {
+    flex: 0 0 110px !important;
+    max-width: 110px;
+  }
+
+  .jeg_thumb img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+  }
+
+  /* Fix content area */
+  .jeg_postblock_content {
+    flex: 1;
+    min-width: 0; /* IMPORTANT - prevents text overflow */
+  }
+
+  /* Better title wrapping */
+  .jeg_post_title {
+    font-size: 14px;
+    line-height: 1.4;
+  }
+
+  /* Remove any grid interference */
+  .politics-section .jeg_posts {
+    display: block !important;
+  }
+
+  .politics-section .jeg_post {
+    grid-column: auto !important;
+  }
 }
 
 /* Video Playlist Styles (Old - keeping for compatibility) */

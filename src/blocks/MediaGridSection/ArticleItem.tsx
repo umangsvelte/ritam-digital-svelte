@@ -15,7 +15,7 @@ const ArticleItem  = ({ articles, articleCategory }) => {
         </h3>
       </div>
 
-      <div className="nation-articles-wrapper grid grid-cols-2 gap-6 mt-3">
+      <div className="nation-articles-wrapper grid grid-cols-1 lg:grid-cols-2 gap-6 mt-3">
 
         {[leftCol, rightCol].map((col, idx) => (
           <div key={idx} className="nation-articles-column">

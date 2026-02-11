@@ -62,15 +62,15 @@ export default function VideoPlaylistClient({ articles, categoryName }: Props) {
                     className="yt-thumb"
                     style={{ backgroundImage: `url(${thumb})` }}
                   >
-                    <div className="yt-badge">
+                    {/* <div className="yt-badge">
                       <span className="badge-text">NEWS BULLETIN</span>
-                      {/* <span className="badge-date">
+                      <span className="badge-date">
                         {new Date(article.publishedDate).toLocaleDateString()}
-                      </span> */}
+                      </span>
                       <span className="badge-date">
                         {article.publishedDateFormatted}
                       </span>
-                    </div>
+                    </div> */}
                   </div>
 
                   <div className="yt-meta">

@@ -33,7 +33,7 @@ export default async function MediaGridSection({
   })
 
   return (
-    <section className="mx-auto px-4 py-6 ">
+    <section className="mx-auto px-4 py-6 relative z-0">
       <div className="videos-nation-wrapper flex flex-col lg:flex-row gap-8">
 
         {/* LEFT – fixed 33% */}

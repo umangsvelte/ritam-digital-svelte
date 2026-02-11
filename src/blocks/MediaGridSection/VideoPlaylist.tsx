@@ -45,8 +45,9 @@ export default function VideoPlaylist({ videos = [] }: { videos?: Video[] }) {
 
         {/* PLAYER */}
         <div className="yt-player-wrapper">
-          <div className="yt-player">
+          <div className="yt-player relative w-full pb-[56.25%] h-0">
             <iframe
+              className="absolute top-0 left-0 w-full h-full"
               id="yt-main-player"
               src={`https://www.youtube.com/embed/${active.youtubeId}?rel=0&showinfo=1`}
               allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -89,7 +90,7 @@ export default function VideoPlaylist({ videos = [] }: { videos?: Video[] }) {
                       backgroundImage: `url(${video.videoThumbnail?.url || ''})`,
                     }}
                   >
-                    <div className="yt-badge">
+                    {/* <div className="yt-badge">
                       <span className="badge-text">
                         {video.category?.title || 'VIDEO'}
                       </span>
@@ -98,7 +99,7 @@ export default function VideoPlaylist({ videos = [] }: { videos?: Video[] }) {
                           {new Date(video.publishedDate).toDateString()}
                         </span>
                       )}
-                    </div>
+                    </div> */}
                   </div>
 
                   {/* META */}
