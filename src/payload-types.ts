@@ -219,10 +219,6 @@ export interface Page {
         featuredArticles: (number | Article)[];
         fixedArticles: (number | Article)[];
         /**
-         * This section is automatically generated. It displays the top 7 most viewed articles sorted by view count.
-         */
-        topNewsInfo?: string | null;
-        /**
          * Hex color code e.g. #ffffff
          */
         bgColor?: string | null;
@@ -248,10 +244,6 @@ export interface Page {
               | {
                   featuredArticles: (number | Article)[];
                   fixedArticles: (number | Article)[];
-                  /**
-                   * This section is automatically generated. It displays the top 7 most viewed articles sorted by view count.
-                   */
-                  topNewsInfo?: string | null;
                   /**
                    * Hex color code e.g. #ffffff
                    */
@@ -378,6 +370,31 @@ export interface Page {
                   blockName?: string | null;
                   blockType: 'latestNews';
                 }
+              | {
+                  title: string;
+                  /**
+                   * Choose which type of articles should appear in this section.
+                   */
+                  mediaType?: ('image' | 'video' | 'all') | null;
+                  /**
+                   * This section is automatically generated. It displays the top 10 most viewed articles sorted by published date.
+                   */
+                  topNewsInfo?: string | null;
+                  id?: string | null;
+                  blockName?: string | null;
+                  blockType: 'topNews';
+                }
+              | {
+                  featuredArticles: (number | Article)[];
+                  fixedArticles: (number | Article)[];
+                  /**
+                   * Hex color code e.g. #ffffff
+                   */
+                  bgColor?: string | null;
+                  id?: string | null;
+                  blockName?: string | null;
+                  blockType: 'featuredNewsSection';
+                }
             )[]
           | null;
         rightColumn?:
@@ -484,6 +501,31 @@ export interface Page {
                   id?: string | null;
                   blockName?: string | null;
                   blockType: 'latestNews';
+                }
+              | {
+                  title: string;
+                  /**
+                   * Choose which type of articles should appear in this section.
+                   */
+                  mediaType?: ('image' | 'video' | 'all') | null;
+                  /**
+                   * This section is automatically generated. It displays the top 10 most viewed articles sorted by published date.
+                   */
+                  topNewsInfo?: string | null;
+                  id?: string | null;
+                  blockName?: string | null;
+                  blockType: 'topNews';
+                }
+              | {
+                  featuredArticles: (number | Article)[];
+                  fixedArticles: (number | Article)[];
+                  /**
+                   * Hex color code e.g. #ffffff
+                   */
+                  bgColor?: string | null;
+                  id?: string | null;
+                  blockName?: string | null;
+                  blockType: 'featuredNewsSection';
                 }
             )[]
           | null;
@@ -1218,8 +1260,8 @@ export interface Search {
   title?: string | null;
   priority?: number | null;
   doc: {
-    relationTo: 'posts';
-    value: number | Post;
+    relationTo: 'articles';
+    value: number | Article;
   };
   slug?: string | null;
   meta?: {
@@ -1487,7 +1529,6 @@ export interface PagesSelect<T extends boolean = true> {
           | {
               featuredArticles?: T;
               fixedArticles?: T;
-              topNewsInfo?: T;
               bgColor?: T;
               id?: T;
               blockName?: T;
@@ -1516,7 +1557,6 @@ export interface PagesSelect<T extends boolean = true> {
                       | {
                           featuredArticles?: T;
                           fixedArticles?: T;
-                          topNewsInfo?: T;
                           bgColor?: T;
                           id?: T;
                           blockName?: T;
@@ -1644,6 +1684,24 @@ export interface PagesSelect<T extends boolean = true> {
                           id?: T;
                           blockName?: T;
                         };
+                    topNews?:
+                      | T
+                      | {
+                          title?: T;
+                          mediaType?: T;
+                          topNewsInfo?: T;
+                          id?: T;
+                          blockName?: T;
+                        };
+                    featuredNewsSection?:
+                      | T
+                      | {
+                          featuredArticles?: T;
+                          fixedArticles?: T;
+                          bgColor?: T;
+                          id?: T;
+                          blockName?: T;
+                        };
                   };
               rightColumn?:
                 | T
@@ -1752,6 +1810,24 @@ export interface PagesSelect<T extends boolean = true> {
                           title?: T;
                           mediaType?: T;
                           latestNewsInfo?: T;
+                          id?: T;
+                          blockName?: T;
+                        };
+                    topNews?:
+                      | T
+                      | {
+                          title?: T;
+                          mediaType?: T;
+                          topNewsInfo?: T;
+                          id?: T;
+                          blockName?: T;
+                        };
+                    featuredNewsSection?:
+                      | T
+                      | {
+                          featuredArticles?: T;
+                          fixedArticles?: T;
+                          bgColor?: T;
                           id?: T;
                           blockName?: T;
                         };

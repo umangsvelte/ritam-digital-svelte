@@ -23,6 +23,7 @@ import { DontMissComponent } from '@/blocks/NationSectionDontMiss/Component'
 import { VideoPlaylistComponent } from '@/blocks/NationSectionVideoPlaylist/Component'
 import  SearchResultsBlock  from '@/blocks/SearchResults/Component'
 import  LatestNewsComponent  from '@/blocks/LatestNews/Component'
+import  TopNewsComponent  from '@/blocks/HomeSectionTopNews/Component'
 
 const blockComponents = {
   archive: ArchiveBlock,
@@ -45,6 +46,7 @@ const blockComponents = {
   videoPlaylist:VideoPlaylistComponent,
   searchResults:SearchResultsBlock,
   latestNews:LatestNewsComponent,
+  topNews:TopNewsComponent,
 }
 
 const RichTextRenderer = ({ content }: { content: any }) => {

@@ -36,17 +36,17 @@ export const FeaturedNewsSection1: Block = {
     //   minRows: 5,
     //   maxRows: 10,
     // },
-    {
-      name: 'topNewsInfo',
-      label: 'Top News (Auto)',
-      type: 'text',
-      admin: {
-        readOnly: true,
-        description:
-          'This section is automatically generated. It displays the top 7 most viewed articles sorted by view count.',
-      },
-      defaultValue: 'Auto-generated (Top 7 by views)',
-    },
+    // {
+    //   name: 'topNewsInfo',
+    //   label: 'Top News (Auto)',
+    //   type: 'text',
+    //   admin: {
+    //     readOnly: true,
+    //     description:
+    //       'This section is automatically generated. It displays the top 7 most viewed articles sorted by view count.',
+    //   },
+    //   defaultValue: 'Auto-generated (Top 7 by views)',
+    // },
     {
         name: 'bgColor',
         label: 'Background Color',

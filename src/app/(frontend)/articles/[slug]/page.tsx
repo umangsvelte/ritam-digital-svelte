@@ -2,7 +2,6 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { getPayload } from 'payload'
 import configPromise from '@payload-config'
-// import { RichText } from '@payloadcms/richtext-lexical/react'
 import RichText from '@/components/RichText'
 import './css/article-detail-page.css'
 import IncrementArticleView from '@/components/IncrementArticleView'
@@ -64,27 +63,6 @@ export default async function ArticleDetailPage(props: { params: Promise<{ slug:
 
   const article = articleRes.docs[0]
   if (!article) return notFound()
-
-  /* ---------------------------------------
-     GET PAGE FOR CATEGORY (if any)
-  --------------------------------------- */
-  // let categoryPage = null
-
-  // if (article.articleType) {
-  //   const pageRes = await payload.find({
-  //     collection: 'pages',
-  //     where: {
-  //       category: {
-  //         equals: typeof article.articleType === 'object'
-  //           ? article.articleType.id
-  //           : article.articleType,
-  //       },
-  //     },
-  //     limit: 1,
-  //   })
-
-  //   categoryPage = pageRes.docs[0] || null
-  // }
 
   const categoryId =
   typeof article.articleType === 'object'
@@ -155,7 +133,7 @@ export default async function ArticleDetailPage(props: { params: Promise<{ slug:
         {/* Breadcrumbs */}
         <div className="breadcrumbs">
           <span><Link href="/">Home</Link></span>
-          <i className="fa fa-angle-right" />
+          {/* <i className="fa fa-angle-right" /> */}
           {breadcrumbs.map((crumb, index) => (
             <span key={crumb.slug}>
               <i className="fa fa-angle-right" />
@@ -218,19 +196,6 @@ export default async function ArticleDetailPage(props: { params: Promise<{ slug:
             />
           </div>
         )}
-        {/* {article.featuredImage?.url && (
-          <div className="featured-image">
-            <img
-              src={article.featuredImage.url}
-              alt={article.featuredImage.caption || article.title}
-            />
-            {article.featuredImage.caption && (
-              <p className="image-caption">
-                {article.featuredImage.caption}
-              </p>
-            )}
-          </div>
-        )} */}
 
         {/* Content */}
         <div className="article-content">

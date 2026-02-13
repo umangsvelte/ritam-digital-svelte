@@ -21,28 +21,19 @@ export default function HeroSlider({ articles }) {
       {articles.map((article) => (
         <SwiperSlide key={article.id}>
           <Link href={`/articles/${article.slug}`} className="relative block h-full">
-
             {/* Image */}
-            {/* <Image
-              src={article.featuredImage?.url}
-              alt={article.title}
-              fill
-              priority
-              className="object-cover"
-            /> */}
-            {/* Image */}
-            {article.mediaType === 'image' && article.featuredImage && (
-            <Image src={article.featuredImage.url} alt={article.title} fill priority className="object-cover" />
+            { (article?.featuredImage || article?.videoThumbnail) && (
+            <Image src={article?.featuredImage?.url || article?.videoThumbnail?.url} alt={article.title} fill priority className="object-cover" />
             )}
 
             {/* Video */}
-            {article.mediaType === 'video' && article.featuredVideoUrl && (
+            {/* {article.mediaType === 'video' && article.featuredVideoUrl && (
             <iframe
                 src={article.featuredVideoUrl}
                 className="w-full h-full"
                 allowFullScreen
             />
-            )}
+            )} */}
 
             {/* Gradient overlay (better than flat black) */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
