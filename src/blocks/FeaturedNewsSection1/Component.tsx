@@ -1,30 +1,29 @@
-import { getPayload } from 'payload'
-import configPromise from '@payload-config'
 import HeroSlider from './HeroSlider'
 import FixedArticles from './FixedArticles'
-// import TopNews from './TopNews'
-import '../css/home-page.css'
 
-export const FeaturedNewsSection1Block = async ({
+export const FeaturedNewsSection1Block = ({
   featuredArticles,
   fixedArticles,
-  bgColor
+  bgColor,
 }: any) => {
-  const payload = await getPayload({ config: configPromise })
+  if (!featuredArticles?.length) return null
 
   return (
     <section
-      className="w-full"
-      style={{ backgroundColor: bgColor || '#ffffff' }}
+      className="latest-news-section"
+      // style={{ backgroundColor: bgColor || '#ffffff' }}
     >
-      <div className="space-y-6">
-        <div className="section-header">
-          <h2 className="section-title">
-            <a href="#">Latest News</a>
-          </h2>
-        </div>
+      <div className="section-header-line">
+        <h2 className="section-heading">
+          Latest News
+        </h2>
+      </div>
 
+      <div className="featured-news-grid">
+        {/* Featured Slider */}
         <HeroSlider articles={featuredArticles} />
+
+        {/* Sub Articles Row */}
         <FixedArticles articles={fixedArticles} />
       </div>
     </section>

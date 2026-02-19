@@ -1,3 +1,85 @@
+// import Link from 'next/link'
+// import Image from 'next/image'
+// import { getPayload } from 'payload'
+// import config from '@payload-config'
+
+// type Props = {
+//   title?: string
+//   articleCategory?: string | { id: string }
+//   limit?: number
+// }
+
+// export const EntertainmentArticlesBlockComponent = async ({
+//   title,
+//   articleCategory,
+//   limit = 3,
+// }: Props) => {
+//   if (!articleCategory) return null
+
+//   const payload = await getPayload({ config })
+
+//   const categoryId =
+//     typeof articleCategory === 'object'
+//       ? articleCategory.id
+//       : articleCategory
+
+//   const { docs } = await payload.find({
+//     collection: 'articles',
+//     where: {
+//       articleType: {
+//         equals: categoryId,
+//       },
+//       mediaType: {
+//         equals: 'image',
+//       },
+//     },
+//     sort: '-publishedDate',
+//     limit,
+//   })
+
+//   if (!docs.length) return null
+
+//   return (
+//     <section className="entertainment-section jeg_col_1o3">
+//       <div className="jeg_block_heading jeg_block_heading_6">
+//         <h3 className="jeg_block_title">
+//           <span>{title}</span>
+//         </h3>
+//       </div>
+
+//       <div className="jeg_posts jeg_block_container flex flex-col gap-4">
+//         {docs.map((article) => (
+//           <article
+//             key={article.id}
+//             className="jeg_post jeg_pl_md_3 format-standard flex gap-3 items-start"
+//           >
+//             <div className="jeg_thumb">
+//               <Link href={`/articles/${article.slug}`}>
+//                 <div className="thumbnail-container">
+//                   <Image
+//                     src={article.featuredImage?.url}
+//                     alt={article.title}
+//                     width={120}
+//                     height={86}
+//                   />
+//                 </div>
+//               </Link>
+//             </div>
+
+//             <div className="jeg_postblock_content">
+//               <h3 className="jeg_post_title">
+//                 <Link href={`/articles/${article.slug}`}>
+//                   {article.title}
+//                 </Link>
+//               </h3>
+//             </div>
+//           </article>
+//         ))}
+//       </div>
+//     </section>
+//   )
+// }
+
 import Link from 'next/link'
 import Image from 'next/image'
 import { getPayload } from 'payload'
@@ -40,42 +122,43 @@ export const EntertainmentArticlesBlockComponent = async ({
   if (!docs.length) return null
 
   return (
-    <section className="entertainment-section jeg_col_1o3">
-      <div className="jeg_block_heading jeg_block_heading_6">
-        <h3 className="jeg_block_title">
-          <span>{title}</span>
-        </h3>
+    <div className="category-block">
+      
+      {/* Header */}
+      <div className="section-header-line">
+        <h2 className="section-heading">
+          {title}
+        </h2>
       </div>
 
-      <div className="jeg_posts jeg_block_container flex flex-col gap-4">
+      {/* Posts */}
+      <div className="category-posts">
         {docs.map((article) => (
           <article
             key={article.id}
-            className="jeg_post jeg_pl_md_3 format-standard flex gap-3 items-start"
+            className="category-post-item"
           >
-            <div className="jeg_thumb">
+            <h3>
               <Link href={`/articles/${article.slug}`}>
-                <div className="thumbnail-container">
-                  <Image
-                    src={article.featuredImage?.url}
-                    alt={article.title}
-                    width={120}
-                    height={86}
-                  />
-                </div>
+                {article.title}
               </Link>
-            </div>
+            </h3>
 
-            <div className="jeg_postblock_content">
-              <h3 className="jeg_post_title">
+            <div className="thumbnail-container">
+              {article.featuredImage?.url && (
                 <Link href={`/articles/${article.slug}`}>
-                  {article.title}
+                  <Image
+                    src={article.featuredImage.url}
+                    alt={article.title}
+                    width={350}
+                    height={230}
+                  />
                 </Link>
-              </h3>
+              )}
             </div>
           </article>
         ))}
       </div>
-    </section>
+    </div>
   )
 }

@@ -805,7 +805,8 @@ export interface Category {
  */
 export interface User {
   id: number;
-  name?: string | null;
+  name: string;
+  role: 'admin' | 'author';
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -1195,6 +1196,7 @@ export interface Article {
   } | null;
   publishedDate: string;
   author_name?: string | null;
+  author?: (number | null) | User;
   tags?:
     | {
         tag?: string | null;
@@ -2130,6 +2132,7 @@ export interface CategoriesSelect<T extends boolean = true> {
  */
 export interface UsersSelect<T extends boolean = true> {
   name?: T;
+  role?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -2171,6 +2174,7 @@ export interface ArticlesSelect<T extends boolean = true> {
   excerpt?: T;
   publishedDate?: T;
   author_name?: T;
+  author?: T;
   tags?:
     | T
     | {

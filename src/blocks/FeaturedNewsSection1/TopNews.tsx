@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import '../css/home-page.css'
+// import '../css/home-page.css'
 
 export default function TopNews({ articles }) {
   if (!articles?.length) return null
