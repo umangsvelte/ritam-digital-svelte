@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react'
+import React, { Fragment, Suspense } from 'react'
 
 import type { Page } from '@/payload-types'
 
@@ -21,6 +21,9 @@ import { HomeSectionBusinessOpinionComponent } from '@/blocks/HomeSectionBusines
 import { LatestNationalNewsComponent } from '@/blocks/NationSectionLatestNationalNews/Component'
 import { DontMissComponent } from '@/blocks/NationSectionDontMiss/Component'
 import { VideoPlaylistComponent } from '@/blocks/NationSectionVideoPlaylist/Component'
+import  SearchResultsBlock  from '@/blocks/SearchResults/Component'
+import  LatestNewsComponent  from '@/blocks/LatestNews/Component'
+import  TopNewsComponent  from '@/blocks/HomeSectionTopNews/Component'
 
 const blockComponents = {
   archive: ArchiveBlock,
@@ -41,6 +44,9 @@ const blockComponents = {
   latestNationalNews:LatestNationalNewsComponent,
   dontMiss:DontMissComponent,
   videoPlaylist:VideoPlaylistComponent,
+  searchResults:SearchResultsBlock,
+  latestNews:LatestNewsComponent,
+  topNews:TopNewsComponent,
 }
 
 const RichTextRenderer = ({ content }: { content: any }) => {
@@ -78,11 +84,35 @@ export const RenderBlocks: React.FC<{
               }, {})
 
               if(processedProps){
+                if (blockType === 'searchResults') {
+                  return (
+                    <Suspense
+                      key={index}
+                      fallback={<div className="py-10 text-center">Loading search results…</div>}
+                    >
+                      <Block
+                        {...processedProps}
+                        blockType={blockType}
+                        disableInnerContainer
+                      />
+                    </Suspense>
+                  )
+                }
+
                 return (
                   <div className="" key={index}>
-                    <Block {...processedProps} blockType={blockType} disableInnerContainer />
+                    <Block
+                      {...processedProps}
+                      blockType={blockType}
+                      disableInnerContainer
+                    />
                   </div>
                 )
+                // return (
+                //   <div className="" key={index}>
+                //     <Block {...processedProps} blockType={blockType} disableInnerContainer />
+                //   </div>
+                // )
               }
             }
           }

@@ -184,6 +184,15 @@ export const Articles: CollectionConfig = {
       type: 'text',
       label: 'Author Name',
       required: false,
+      admin: {
+        hidden: true,
+      },
+    },
+    {
+      name: 'author',
+      type: 'relationship',
+      relationTo: 'users',
+      required: false,
     },
     {
       name: 'tags',

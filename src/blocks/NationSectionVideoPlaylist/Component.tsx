@@ -1,7 +1,6 @@
 import { getPayload } from 'payload'
 import configPromise from '@payload-config'
 import { getYoutubeId } from '@/utils/getYoutubeId'
-import '../css/nation-page.css'
 import VideoPlaylistClient from './VideoPlaylistClient'
 
 type Props = {
@@ -45,12 +44,6 @@ export const VideoPlaylistComponent = async ({
   })
 
 
-// const articles = docs
-//     .map(article => ({
-//       ...article,
-//       youtubeVideoId: getYoutubeId(article.featuredVideoUrl),
-//     }))
-//     .filter(article => article.youtubeVideoId)
 const articles = docs
   .map(article => ({
     ...article,
