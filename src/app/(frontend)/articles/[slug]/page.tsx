@@ -15,9 +15,7 @@ function getEmbedUrl(url: string) {
 
   // YouTube
   if (url.includes('youtube.com') || url.includes('youtu.be')) {
-    const videoId =
-      url.split('v=')[1]?.split('&')[0] ||
-      url.split('youtu.be/')[1]
+    const videoId = url.split('v=')[1]?.split('&')[0] || url.split('youtu.be/')[1]
     return `https://www.youtube.com/embed/${videoId}`
   }
 
@@ -49,7 +47,6 @@ export default async function ArticleDetailPage(props: { params: Promise<{ slug:
   const { slug } = await props.params
   const payload = await getPayload({ config: configPromise })
 
-
   /* ---------------------------------------
      MAIN ARTICLE
   --------------------------------------- */
@@ -65,9 +62,7 @@ export default async function ArticleDetailPage(props: { params: Promise<{ slug:
   if (!article) return notFound()
 
   const categoryId =
-  typeof article.articleType === 'object'
-    ? article.articleType.id
-    : article.articleType
+    typeof article.articleType === 'object' ? article.articleType.id : article.articleType
 
   const pageRes = await payload.find({
     collection: 'pages',
@@ -82,9 +77,7 @@ export default async function ArticleDetailPage(props: { params: Promise<{ slug:
 
   const categoryPage = pageRes.docs[0] || null
 
-  const breadcrumbs = categoryPage
-  ? buildBreadcrumb(categoryPage)
-  : []
+  const breadcrumbs = categoryPage ? buildBreadcrumb(categoryPage) : []
 
   const formattedDate = new Date(article.publishedDate).toLocaleString('en-IN', {
     day: '2-digit',
@@ -98,7 +91,7 @@ export default async function ArticleDetailPage(props: { params: Promise<{ slug:
      RELATED ARTICLES (case-insensitive tags not yet implemented)
   --------------------------------------- */
 
-    const relatedRes = await payload.find({
+  const relatedRes = await payload.find({
     collection: 'articles',
     where: {
       'tags.tag': { in: article.tags?.map((t) => t.tag) || [] },
@@ -106,7 +99,6 @@ export default async function ArticleDetailPage(props: { params: Promise<{ slug:
     },
     limit: 5,
   })
-
 
   /* ---------------------------------------
      LATEST NEWS (sidebar)
@@ -120,9 +112,9 @@ export default async function ArticleDetailPage(props: { params: Promise<{ slug:
     limit: 10,
   })
 
-  const siteUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'https://www.example.com';
+  const siteUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'https://www.example.com'
   const shareUrl = encodeURIComponent(`${siteUrl}/articles/${article.slug}`)
-  const shareTitle = encodeURIComponent(article.title);
+  const shareTitle = encodeURIComponent(article.title)
 
   // return (
   //   <div className='container blog-container'>
@@ -315,16 +307,13 @@ export default async function ArticleDetailPage(props: { params: Promise<{ slug:
 
       {/* ================= LEFT CONTENT ================= */}
       <div className="content">
-
         {/* Breadcrumb */}
         <div className="breadcrumb">
           <Link href="/">Home</Link>
           {breadcrumbs.map((crumb) => (
             <span key={crumb.slug}>
               {' > '}
-              <Link href={`/${crumb.slug}`}>
-                {crumb.title}
-              </Link>
+              <Link href={`/${crumb.slug}`}>{crumb.title}</Link>
             </span>
           ))}
         </div>
@@ -340,9 +329,7 @@ export default async function ArticleDetailPage(props: { params: Promise<{ slug:
             className="author-img"
           />
           <span className="meta">{article.author?.name}</span>
-          <span className="meta-date">
-            — {formattedDate} IST
-          </span>
+          <span className="meta-date">— {formattedDate} IST</span>
         </div>
 
         <div className="hr" />
@@ -350,10 +337,7 @@ export default async function ArticleDetailPage(props: { params: Promise<{ slug:
         {/* Featured Media */}
         {article.mediaType === 'image' && article.featuredImage?.url && (
           <div className="feature-img">
-            <img
-              src={article.featuredImage.url}
-              alt={article.title}
-            />
+            <img src={article.featuredImage.url} alt={article.title} />
           </div>
         )}
 
@@ -371,22 +355,38 @@ export default async function ArticleDetailPage(props: { params: Promise<{ slug:
 
         {/* Social Buttons (Top) */}
         <div className="social-buttons">
-          <a href={`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`} className="fb" target="_blank">
+          <a
+            href={`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`}
+            className="fb"
+            target="_blank"
+          >
             <i className="fab fa-facebook-f"></i>
             <span>Facebook</span>
           </a>
 
-          <a href={`https://twitter.com/intent/tweet?url=${shareUrl}&text=${shareTitle}`} className="tw" target="_blank">
+          <a
+            href={`https://twitter.com/intent/tweet?url=${shareUrl}&text=${shareTitle}`}
+            className="tw"
+            target="_blank"
+          >
             <i className="fab fa-twitter"></i>
             <span>Twitter</span>
           </a>
 
-          <a href={`https://api.whatsapp.com/send?text=${shareTitle}%20${shareUrl}`} className="wa" target="_blank">
+          <a
+            href={`https://api.whatsapp.com/send?text=${shareTitle}%20${shareUrl}`}
+            className="wa"
+            target="_blank"
+          >
             <i className="fab fa-whatsapp"></i>
             <span>WhatsApp</span>
           </a>
 
-          <a href={`https://t.me/share/url?url=${shareUrl}&text=${shareTitle}`} className="tg" target="_blank">
+          <a
+            href={`https://t.me/share/url?url=${shareUrl}&text=${shareTitle}`}
+            className="tg"
+            target="_blank"
+          >
             <i className="fab fa-telegram-plane"></i>
             <span>Telegram</span>
           </a>
@@ -403,22 +403,38 @@ export default async function ArticleDetailPage(props: { params: Promise<{ slug:
 
         {/* Social Buttons (Bottom) */}
         <div className="social-buttons">
-          <a href={`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`} className="fb" target="_blank">
+          <a
+            href={`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`}
+            className="fb"
+            target="_blank"
+          >
             <i className="fab fa-facebook-f"></i>
             <span>Share</span>
           </a>
 
-          <a href={`https://twitter.com/intent/tweet?url=${shareUrl}&text=${shareTitle}`} className="tw" target="_blank">
+          <a
+            href={`https://twitter.com/intent/tweet?url=${shareUrl}&text=${shareTitle}`}
+            className="tw"
+            target="_blank"
+          >
             <i className="fab fa-twitter"></i>
             <span>Tweet</span>
           </a>
 
-          <a href={`https://api.whatsapp.com/send?text=${shareTitle}%20${shareUrl}`} className="wa" target="_blank">
+          <a
+            href={`https://api.whatsapp.com/send?text=${shareTitle}%20${shareUrl}`}
+            className="wa"
+            target="_blank"
+          >
             <i className="fab fa-whatsapp"></i>
             <span>Send</span>
           </a>
 
-          <a href={`https://t.me/share/url?url=${shareUrl}&text=${shareTitle}`} className="tg" target="_blank">
+          <a
+            href={`https://t.me/share/url?url=${shareUrl}&text=${shareTitle}`}
+            className="tg"
+            target="_blank"
+          >
             <i className="fab fa-telegram-plane"></i>
             <span>Share</span>
           </a>
@@ -428,12 +444,8 @@ export default async function ArticleDetailPage(props: { params: Promise<{ slug:
         {article.tags?.length > 0 && (
           <div className="tags-line">
             <span className="tags-label">Tags:</span>
-            {article.tags.map(tag => (
-              <Link
-                key={tag.tag}
-                href={`/tag/${tag.tag.toLowerCase()}`}
-                className="tag-detail"
-              >
+            {article.tags.map((tag) => (
+              <Link key={tag.tag} href={`/tag/${tag.tag.toLowerCase()}`} className="tag-detail">
                 {tag.tag}
               </Link>
             ))}
@@ -448,7 +460,7 @@ export default async function ArticleDetailPage(props: { params: Promise<{ slug:
             </div>
 
             <div className="related-grid">
-              {relatedRes.docs.map(rel => (
+              {relatedRes.docs.map((rel) => (
                 <div key={rel.id} className="news-card">
                   <div className="image-wrapper">
                     <Link href={`/articles/${rel.slug}`}>
@@ -457,21 +469,16 @@ export default async function ArticleDetailPage(props: { params: Promise<{ slug:
                         alt={rel.title}
                       />
                     </Link>
-                    <div className="badge">
-                      {rel.articleType?.name}
-                    </div>
+                    <div className="badge">{rel.articleType?.name}</div>
                   </div>
                   <div className="news-title">
-                    <Link href={`/articles/${rel.slug}`}>
-                      {rel.title}
-                    </Link>
+                    <Link href={`/articles/${rel.slug}`}>{rel.title}</Link>
                   </div>
                 </div>
               ))}
             </div>
           </>
         )}
-
       </div>
 
       {/* ================= RIGHT SIDEBAR ================= */}
@@ -481,21 +488,21 @@ export default async function ArticleDetailPage(props: { params: Promise<{ slug:
             <div className="latest-title">Latest News</div>
           </div>
 
-          {latestRes.docs.map(item => (
+          {latestRes.docs.map((item) => (
             <div key={item.id} className="latest-item">
-              <Link href={`/articles/${item.slug}`}>
+              <Link href={`/articles/${item.slug}`} className="latest-img">
                 <img src={item.featuredImage?.url || ''} alt={item.title} />
               </Link>
-              <p>
-                <Link href={`/articles/${item.slug}`}>
-                  {item.title}
-                </Link>
-              </p>
+
+              <div className="latest-content">
+                <p>
+                  <Link href={`/articles/${item.slug}`}>{item.title}</Link>
+                </p>
+              </div>
             </div>
           ))}
         </div>
       </div>
     </div>
   )
-
 }

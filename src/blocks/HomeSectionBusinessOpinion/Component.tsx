@@ -100,10 +100,7 @@ export const HomeSectionBusinessOpinionComponent = async ({
 
   const payload = await getPayload({ config })
 
-  const categoryId =
-    typeof articleCategory === 'object'
-      ? articleCategory.id
-      : articleCategory
+  const categoryId = typeof articleCategory === 'object' ? articleCategory.id : articleCategory
 
   const res = await payload.find({
     collection: 'articles',
@@ -124,31 +121,27 @@ export const HomeSectionBusinessOpinionComponent = async ({
   return (
     <div className="business">
       <div className="section-header-line">
-        <h2 className="section-title">{title}</h2>
+        <h2 className="section-heading">{title}</h2>
       </div>
 
       {/* First Row */}
       <div className="business-grid">
         {res.docs.slice(0, 2).map((article) => {
           const imageUrl =
-            typeof article.featuredImage === 'object'
-              ? article.featuredImage?.url
-              : ''
+            typeof article.featuredImage === 'object' ? article.featuredImage?.url : ''
 
           return (
             <div key={article.id} className="news-card">
               <Link href={`/articles/${article.slug}`}>
-                <img src={imageUrl || ''} alt={article.title} />
+                <div className="news-img">
+                  <img src={imageUrl || ''} alt={article.title} />
+                </div>
               </Link>
 
-              <span className="tag">
-                {article?.articleType?.name ?? 'BUSINESS'}
-              </span>
+              <span className="tag">{article?.articleType?.name ?? 'BUSINESS'}</span>
 
               <h3>
-                <Link href={`/articles/${article.slug}`}>
-                  {article.title}
-                </Link>
+                <Link href={`/articles/${article.slug}`}>{article.title}</Link>
               </h3>
             </div>
           )
@@ -159,24 +152,20 @@ export const HomeSectionBusinessOpinionComponent = async ({
       <div className="business-grid">
         {res.docs.slice(2, 4).map((article) => {
           const imageUrl =
-            typeof article.featuredImage === 'object'
-              ? article.featuredImage?.url
-              : ''
+            typeof article.featuredImage === 'object' ? article.featuredImage?.url : ''
 
           return (
             <div key={article.id} className="news-card">
               <Link href={`/articles/${article.slug}`}>
-                <img src={imageUrl || ''} alt={article.title} />
+                <div className="news-img">
+                  <img src={imageUrl || ''} alt={article.title} />
+                </div>
               </Link>
 
-              <span className="tag">
-                {article?.articleType?.name ?? 'BUSINESS'}
-              </span>
+              <span className="tag">{article?.articleType?.name ?? 'BUSINESS'}</span>
 
               <h3>
-                <Link href={`/articles/${article.slug}`}>
-                  {article.title}
-                </Link>
+                <Link href={`/articles/${article.slug}`}>{article.title}</Link>
               </h3>
             </div>
           )

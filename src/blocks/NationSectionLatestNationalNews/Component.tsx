@@ -174,14 +174,10 @@ type Props = {
   category: string | { id: string }
 }
 
-export const LatestNationalNewsComponent = async ({
-  title,
-  category,
-}: Props) => {
+export const LatestNationalNewsComponent = async ({ title, category }: Props) => {
   const payload = await getPayload({ config })
 
-  const categoryId =
-    typeof category === 'object' ? category.id : category
+  const categoryId = typeof category === 'object' ? category.id : category
 
   const { docs } = await payload.find({
     collection: 'articles',
@@ -201,41 +197,32 @@ export const LatestNationalNewsComponent = async ({
   return (
     <section className="rd-nation-latest container">
       <div className="rd-nation-container">
-        
         {/* HEADER */}
         <div className="rd-nation-header section-header-line">
           <span>{title}</span>
         </div>
 
         <div className="rd-nation-layout">
-          
           {/* LEFT GRID */}
           <div className="rd-nation-main">
             {leftArticles.map((article: Article) => {
               const image =
-                typeof article.featuredImage === 'object'
-                  ? article.featuredImage?.url
-                  : ''
+                typeof article.featuredImage === 'object' ? article.featuredImage?.url : ''
 
               return (
-                <article
-                  key={article.id}
-                  className="rd-nation-card"
-                >
+                <article key={article.id} className="rd-nation-card">
                   <div className="rd-nation-image">
-                    <span className="rd-nation-tag">
-                      {article.articleType?.name || 'NATION'}
-                    </span>
+                    <span className="rd-nation-tag">{article.articleType?.name || 'NATION'}</span>
 
-                    <Link href={`/articles/${article.slug}`}>
-                      <img src={image || ''} alt={article.title} />
-                    </Link>
+                    <div className="rd-main-img">
+                      <Link href={`/articles/${article.slug}`}>
+                        <img src={image || ''} alt={article.title} />
+                      </Link>
+                    </div>
                   </div>
 
                   <h3>
-                    <Link href={`/articles/${article.slug}`}>
-                      {article.title}
-                    </Link>
+                    <Link href={`/articles/${article.slug}`}>{article.title}</Link>
                   </h3>
                 </article>
               )
@@ -246,32 +233,25 @@ export const LatestNationalNewsComponent = async ({
           <aside className="rd-nation-sidebar">
             {rightArticles.map((article: Article) => {
               const image =
-                typeof article.featuredImage === 'object'
-                  ? article.featuredImage?.url
-                  : ''
+                typeof article.featuredImage === 'object' ? article.featuredImage?.url : ''
 
               return (
-                <div
-                  key={article.id}
-                  className="rd-side-item"
-                >
-                  <Link href={`/articles/${article.slug}`}>
-                    <img src={image || ''} alt={article.title} />
-                  </Link>
+                <div key={article.id} className="rd-side-item">
+                  <div className="rd-side-img">
+                    <Link href={`/articles/${article.slug}`}>
+                      <img src={image || ''} alt={article.title} />
+                    </Link>
+                  </div>
 
                   <p>
-                    <Link href={`/articles/${article.slug}`}>
-                      {article.title}
-                    </Link>
+                    <Link href={`/articles/${article.slug}`}>{article.title}</Link>
                   </p>
                 </div>
               )
             })}
           </aside>
-
         </div>
       </div>
     </section>
   )
 }
-

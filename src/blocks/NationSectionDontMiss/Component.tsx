@@ -106,25 +106,15 @@ type Props = {
   limit: number
 }
 
-export const DontMissComponent = async ({
-  title,
-  articleCategory,
-  limit,
-}: Props) => {
+export const DontMissComponent = async ({ title, articleCategory, limit }: Props) => {
   const payload = await getPayload({ config })
 
-  const categoryId =
-    typeof articleCategory === 'object'
-      ? articleCategory.id
-      : articleCategory
+  const categoryId = typeof articleCategory === 'object' ? articleCategory.id : articleCategory
 
   const { docs } = await payload.find({
     collection: 'articles',
     where: {
-      and: [
-        { articleType: { equals: categoryId } },
-        { mediaType: { equals: 'image' } },
-      ],
+      and: [{ articleType: { equals: categoryId } }, { mediaType: { equals: 'image' } }],
     },
     sort: '-publishedDate',
     limit,
@@ -140,10 +130,7 @@ export const DontMissComponent = async ({
 
       <ul className="rd-dontmiss-list">
         {docs.map((article: Article) => {
-          const image =
-            typeof article.featuredImage === 'object'
-              ? article.featuredImage?.url
-              : ''
+          const image = typeof article.featuredImage === 'object' ? article.featuredImage?.url : ''
 
           return (
             <li key={article.id}>
@@ -151,9 +138,11 @@ export const DontMissComponent = async ({
                 <span>{article.title}</span>
               </Link>
 
-              <Link href={`/articles/${article.slug}`}>
-                <img src={image || ''} alt={article.title} />
-              </Link>
+              <div className="rd-dontmiss-img">
+                <Link href={`/articles/${article.slug}`}>
+                  <img src={image || ''} alt={article.title} />
+                </Link>
+              </div>
             </li>
           )
         })}

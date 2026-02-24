@@ -50,7 +50,7 @@
 
 //     <div className="jeg_block_container">
 //       <div className="flex flex-col md:flex-row gap-6">
-        
+
 //         {/* FEATURED ARTICLE */}
 //         {featured && (
 //           <article className="w-full md:w-1/2">
@@ -78,7 +78,7 @@
 //         <div className="w-full md:w-1/2 flex flex-col gap-4">
 //           {smallArticles.map((article) => (
 //             <article key={article.id} className="flex gap-3">
-              
+
 //               <Link href={`/articles/${article.slug}`}>
 //                 <div className="w-24 h-16 flex-shrink-0 overflow-hidden rounded">
 //                   <Image
@@ -107,7 +107,6 @@
 
 // }
 
-
 import Link from 'next/link'
 import Image from 'next/image'
 import { getPayload } from 'payload'
@@ -128,10 +127,7 @@ export const SportsArticlesBlockComponent = async ({
 
   const payload = await getPayload({ config })
 
-  const categoryId =
-    typeof articleCategory === 'object'
-      ? articleCategory.id
-      : articleCategory
+  const categoryId = typeof articleCategory === 'object' ? articleCategory.id : articleCategory
 
   const res = await payload.find({
     collection: 'articles',
@@ -153,16 +149,12 @@ export const SportsArticlesBlockComponent = async ({
 
   return (
     <div className="category-block sports-two-col">
-      
       {/* Header */}
       <div className="section-header-line">
-        <h2 className="section-heading">
-          {title}
-        </h2>
+        <h2 className="section-heading">{title}</h2>
       </div>
 
       <div className="sports-layout">
-        
         {/* LEFT COLUMN (Featured Article) */}
         <div className="sports-left">
           {featured && (
@@ -181,9 +173,7 @@ export const SportsArticlesBlockComponent = async ({
               </div>
 
               <h3>
-                <Link href={`/articles/${featured.slug}`}>
-                  {featured.title}
-                </Link>
+                <Link href={`/articles/${featured.slug}`}>{featured.title}</Link>
               </h3>
             </article>
           )}
@@ -192,30 +182,21 @@ export const SportsArticlesBlockComponent = async ({
         {/* RIGHT COLUMN (Side Articles) */}
         <div className="sports-right">
           {sideArticles.map((article) => (
-            <article
-              key={article.id}
-              className="sports-side-post"
-            >
+            <article key={article.id} className="sports-side-post">
               <Link href={`/articles/${article.slug}`}>
                 {article.featuredImage?.url && (
-                  <Image
-                    src={article.featuredImage.url}
-                    alt={article.title}
-                    width={120}
-                    height={80}
-                  />
+                  <div className="sports-thumb">
+                    <Image src={article.featuredImage.url} alt={article.title} fill sizes="120px" />
+                  </div>
                 )}
               </Link>
 
               <h4>
-                <Link href={`/articles/${article.slug}`}>
-                  {article.title}
-                </Link>
+                <Link href={`/articles/${article.slug}`}>{article.title}</Link>
               </h4>
             </article>
           ))}
         </div>
-
       </div>
     </div>
   )
