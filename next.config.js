@@ -4,7 +4,7 @@ import redirects from './redirects.js'
 
 const NEXT_PUBLIC_SERVER_URL = process.env.VERCEL_PROJECT_PRODUCTION_URL
   ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-  : undefined || process.env.__NEXT_PRIVATE_ORIGIN || 'http://localhost:3000'
+  : undefined || process.env.__NEXT_PRIVATE_ORIGIN || 'https://ritamweb.vaves.app/'
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -37,10 +37,10 @@ const nextConfig = {
         protocol: 'http',
       },
       // Add your production domain when ready
-      //  {
-      //    hostname: 'hssnl.vaves.app',
-      //    protocol: 'https',
-      //  },
+        {
+          hostname: 'ritamweb.vaves.app',
+          protocol: 'https',
+        },
       // {
       //   hostname: 'master.d2jkgcwd5y5if.amplifyapp.com',
       //   protocol: 'https',
