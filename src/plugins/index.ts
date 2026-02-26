@@ -98,6 +98,9 @@ export const plugins: Plugin[] = [
       fields: ({ defaultFields }) => {
         return [...defaultFields, ...searchFields]
       },
+      admin: {
+        hideAPIURL: true,
+      },
     },
   }),
 ]

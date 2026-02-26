@@ -5,6 +5,7 @@ export const UserLogs: CollectionConfig = {
   admin: {
     useAsTitle: 'action',
     defaultColumns: ['action', 'collection', 'user', 'createdAt'],
+    hideAPIURL: true,
   },
   access: {
     read: ({ req }) => req.user?.role === 'admin',

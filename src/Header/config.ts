@@ -38,6 +38,9 @@ import { revalidateHeader } from './hooks/revalidateHeader'
 
 export const Header: GlobalConfig = {
   slug: 'header',
+  admin: {
+    hideAPIURL: true,
+  },
   access: {
     read: () => true,
     update: ({ req }) => !!req.user,
