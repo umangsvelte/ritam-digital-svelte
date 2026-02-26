@@ -2,11 +2,180 @@ import type { CollectionConfig } from 'payload'
 import  formatSlug  from '../../hooks/formatSlug';
 import { lexicalEditor, HeadingFeature,FixedToolbarFeature, InlineToolbarFeature, AlignFeature , BlocksFeature, LinkFeature, UploadFeature} from '@payloadcms/richtext-lexical';
 import { BgColorFeature, HighlightColorFeature, TextColorFeature, YoutubeFeature, VimeoFeature } from 'payloadcms-lexical-ext';
+import { generatePreviewPath } from '../../utilities/generatePreviewPath'
+import {
+  MetaDescriptionField,
+  MetaImageField,
+  MetaTitleField,
+  OverviewField,
+  PreviewField,
+} from '@payloadcms/plugin-seo/fields'
 
 export const Articles: CollectionConfig = {
   slug: 'articles',
   access: {
-    read: () => true,
+    read: ({ req }) => {
+      if (req.user?.role === 'admin') return true
+
+      if (req.user?.role === 'author') {
+        return {
+          or: [
+            {
+              author: {
+                equals: req.user.id,
+              },
+            },
+            {
+              _status: {
+                equals: 'published',
+              },
+            },
+          ],
+        }
+      }
+
+      return {
+        _status: {
+          equals: 'published',
+        },
+      }
+    },
+
+
+    create: ({ req }) => {
+      return req.user?.role === 'admin' || req.user?.role === 'author'
+    },
+
+    update: ({ req }) => {
+      if (req.user?.role === 'admin') return true
+
+      // author can update only their own articles
+      return {
+        author: {
+          equals: req.user?.id,
+        },
+      }
+    },
+
+    delete: ({ req }) => {
+      if (req.user?.role === 'admin') return true
+
+      // author can delete only their own articles
+      return {
+        author: {
+          equals: req.user?.id,
+        },
+      }
+    },
+  },
+  hooks: {
+    afterChange: [
+      async (args) => {
+        try {
+          const { operation, req, doc, previousDoc } = args
+
+          if (!req?.user?.id) return
+          if (!doc && !previousDoc) return
+
+          const documentId = doc?.id ?? previousDoc?.id
+          if (!documentId) return
+
+          // Helper function to populate relationships
+          const populateRelations = async (data: any) => {
+            if (!data) return null
+            
+            const populated = { ...data }
+            
+            // Populate articleType if it exists
+            if (data.articleType) {
+              populated.articleType = await req.payload.findByID({
+                collection: 'articleCategories',
+                id: typeof data.articleType === 'object' ? data.articleType.id : data.articleType,
+                depth: 1,
+              })
+            }
+            
+            // Populate featuredImage if it exists
+            if (data.featuredImage) {
+              populated.featuredImage = await req.payload.findByID({
+                collection: 'media',
+                id: typeof data.featuredImage === 'object' ? data.featuredImage.id : data.featuredImage,
+                depth: 1,
+              })
+            }
+            
+            // Populate tags if they exist
+            if (data.tags && Array.isArray(data.tags)) {
+              populated.tags = await Promise.all(
+                data.tags.map(async (tagId: any) => {
+                  return await req.payload.findByID({
+                    collection: 'articleTags',
+                    id: typeof tagId === 'object' ? tagId.id : tagId,
+                    depth: 1,
+                  })
+                })
+              )
+            }
+            
+            // Populate author if it exists
+            if (data.author) {
+              populated.author = await req.payload.findByID({
+                collection: 'users',
+                id: typeof data.author === 'object' ? data.author.id : data.author,
+                depth: 1,
+              })
+            }
+            
+            return populated
+          }
+
+          const populatedNewData = await populateRelations(doc)
+          const populatedPreviousData = await populateRelations(previousDoc)
+
+          await req.payload.create({
+            collection: 'userLogs',
+            data: {
+              action: operation,
+              collection: 'articles',
+              documentId: String(documentId),
+              user: req.user.id,
+              previousData: populatedPreviousData,
+              newData: populatedNewData,
+            },
+          })
+        } catch (error) {
+          console.error('Audit log error (afterChange):', error)
+        }
+      },
+    ],
+    
+    // Optional: Also log beforeDelete if you want to capture delete info
+    beforeDelete: [
+      async (args) => {
+        try {
+          const { req, id } = args
+          
+          if (!req?.user?.id) return
+
+          await req.payload.create({
+            collection: 'userLogs',
+            data: {
+              action: 'delete',
+              collection: 'articles',
+              documentId: String(id),
+              user: req.user.id,
+              previousData: await req.payload.findByID({
+                collection: 'articles',
+                id,
+              }),
+              newData: null,
+            },
+          })
+        } catch (error) {
+          console.error('Audit log error (beforeDelete):', error)
+        }
+      },
+    ],
   },
   admin: {
     useAsTitle: 'title',
@@ -17,6 +186,21 @@ export const Articles: CollectionConfig = {
       'excerpt',
       'articleType', 
     ],
+    hideAPIURL: true,
+    livePreview: {
+      url: ({ data, req }) =>
+        generatePreviewPath({
+          slug: data?.slug,
+          collection: 'articles',
+          req,
+        }),
+    },
+    preview: (data, { req }) =>
+      generatePreviewPath({
+        slug: data?.slug as string,
+        collection: 'articles',
+        req,
+      }),
   },
   fields: [
     {
@@ -196,15 +380,9 @@ export const Articles: CollectionConfig = {
     },
     {
       name: 'tags',
-      type: 'array',
-      label: 'Tags',
-      fields: [
-        {
-          name: 'tag',
-          type: 'text',
-          required: false,
-        },
-      ],
+      type: 'relationship',
+      relationTo: 'articleTags',
+      hasMany: true,
     },
     {
       name: 'views',
@@ -214,6 +392,48 @@ export const Articles: CollectionConfig = {
         position: 'sidebar',
         readOnly: true,
       },
+    },
+    {
+      name: 'scheduledRelease',
+      type: 'date',
+      label: 'Scheduled Release Date & Time',
+      admin: {
+        position: 'sidebar',
+        date: {
+          pickerAppearance: 'dayAndTime',
+        },
+        condition: (data) => {
+          // Only show scheduling option for draft articles
+          return data?._status === 'draft';
+        },
+      },
+    },
+    {
+      name: 'meta',
+      label: 'SEO',
+      type: 'group',
+      admin: {
+        position: 'sidebar',
+      },
+      fields: [
+        OverviewField({
+          titlePath: 'meta.title',
+          descriptionPath: 'meta.description',
+          imagePath: 'meta.image',
+        }),
+        MetaTitleField({
+          hasGenerateFn: true,
+        }),
+        MetaImageField({
+          relationTo: 'media',
+        }),
+        MetaDescriptionField({}),
+        PreviewField({
+          hasGenerateFn: true,
+          titlePath: 'meta.title',
+          descriptionPath: 'meta.description',
+        }),
+      ],
     },
     {
       name: 'articleType',
@@ -226,4 +446,9 @@ export const Articles: CollectionConfig = {
       },
     },
   ],
+  versions: {
+    drafts: {
+      autosave: false
+    },
+  },
 }

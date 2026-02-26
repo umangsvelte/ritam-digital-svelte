@@ -1,0 +1,90 @@
+import type { TaskConfig } from 'payload'
+
+export const publishScheduledArticlesTask: TaskConfig = {
+  slug: 'publishScheduledArticles',
+  
+  // Required: Define retry behavior
+  retries: 3,
+  
+  // Define the schedule
+  schedule: [
+    {
+      cron: '* * * * *', // Every minute
+      queue: 'scheduler',
+    },
+  ],
+
+  // Required: Define input schema (even if empty)
+  inputSchema: [
+    {
+      name: 'test',
+      type: 'text',
+      required: false,
+    },
+  ],
+
+  handler: async ({ req, input }): Promise<void> => {
+    const { payload } = req
+    
+    try {
+      const now = new Date()
+      
+      const articles = await payload.find({
+        collection: 'articles',
+        where: {
+          and: [
+            {
+              _status: {
+                equals: 'draft',
+              },
+            },
+            {
+              scheduledRelease: {
+                less_than_equal: now.toISOString(),
+              },
+            },
+          ],
+        },
+        limit: 100,
+      })
+
+      for (const article of articles.docs) {
+        try {
+          await payload.update({
+            collection: 'articles',
+            id: article.id,
+            data: {
+              _status: 'published',
+              scheduledRelease: null,
+            },
+          })
+
+        //   try {
+        //     await req.payload.create({
+        //       collection: 'userLogs',
+        //       data: {
+        //         action: 'scheduled_publish',
+        //         collection: 'articles',
+        //         documentId: String(article.id),
+        //         user: null, // Use null instead of 1 for system actions
+        //         previousData: { _status: 'draft' },
+        //         newData: {
+        //           message: 'Article automatically published by scheduler',
+        //         },
+        //       },
+        //     })
+        //   } catch (logError) {
+        //     console.warn(`Logging failed for article ${article.id}:`, logError.message)
+        //   }
+
+          console.log(`✅ Published scheduled article: ${article.id}`)
+        } catch (articleError) {
+          console.error(`❌ Failed to publish article ${article.id}:`, articleError)
+        }
+      }
+    } catch (error) {
+      console.error('Scheduler task error:', error)
+      throw error // Let Payload know the job failed
+    }
+  },
+}

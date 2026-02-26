@@ -116,6 +116,9 @@ export const PoliticsArticlesBlockComponent = async ({
       mediaType: {
         equals: 'image',
       },
+      _status: {
+        equals: 'published',
+      },
     },
     sort: '-publishedDate',
     limit,

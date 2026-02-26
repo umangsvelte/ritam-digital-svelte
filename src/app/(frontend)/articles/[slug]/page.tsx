@@ -5,6 +5,11 @@ import configPromise from '@payload-config'
 import RichText from '@/components/RichText'
 // import './css/article-detail-page.css'
 import IncrementArticleView from '@/components/IncrementArticleView'
+import TwitterEmbed from '@/components/TwitterEmbed'
+import { draftMode } from 'next/headers'
+import Image from 'next/image'
+import TextToSpeech from '@/utils/TextToSpeech'
+import { extractTextFromRichText } from '@/utils/extractRichText'
 
 type PageProps = {
   params: Promise<{ slug: string }> // params is now a Promise
@@ -59,6 +64,7 @@ export default async function ArticleDetailPage(props: { params: Promise<{ slug:
       slug: { equals: slug },
     },
     limit: 1,
+    depth: 1,
   })
 
   const article = articleRes.docs[0]
@@ -68,6 +74,7 @@ export default async function ArticleDetailPage(props: { params: Promise<{ slug:
   typeof article.articleType === 'object'
     ? article.articleType.id
     : article.articleType
+
 
   const pageRes = await payload.find({
     collection: 'pages',
@@ -98,14 +105,29 @@ export default async function ArticleDetailPage(props: { params: Promise<{ slug:
      RELATED ARTICLES (case-insensitive tags not yet implemented)
   --------------------------------------- */
 
+  const tagIDs =
+    article.tags?.map((t: any) =>
+      typeof t === 'object' ? t.id : t
+    ) || []
+
     const relatedRes = await payload.find({
-    collection: 'articles',
-    where: {
-      'tags.tag': { in: article.tags?.map((t) => t.tag) || [] },
-      id: { not_equals: article.id },
-    },
-    limit: 5,
-  })
+      collection: 'articles',
+      where: {
+        and: [
+          {
+            tags: { in: tagIDs },
+          },
+          {
+            id: { not_equals: article.id },
+          },
+          {
+            _status: { equals: 'published' },
+          },
+        ],
+      },
+      sort: '-publishedDate',
+      limit: 5,
+    })
 
 
   /* ---------------------------------------
@@ -123,6 +145,8 @@ export default async function ArticleDetailPage(props: { params: Promise<{ slug:
   const siteUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'https://www.example.com';
   const shareUrl = encodeURIComponent(`${siteUrl}/articles/${article.slug}`)
   const shareTitle = encodeURIComponent(article.title);
+  const { isEnabled } = await draftMode()
+  // const plainText = extractTextFromRichText(article?.excerpt)
 
   // return (
   //   <div className='container blog-container'>
@@ -311,7 +335,7 @@ export default async function ArticleDetailPage(props: { params: Promise<{ slug:
 
   return (
     <div className="container main">
-      <IncrementArticleView slug={article.slug} />
+      <IncrementArticleView slug={article.slug} isPreview={isEnabled}/>
 
       {/* ================= LEFT CONTENT ================= */}
       <div className="content">
@@ -393,6 +417,7 @@ export default async function ArticleDetailPage(props: { params: Promise<{ slug:
         </div>
 
         {/* Article Content */}
+        {/* <TextToSpeech text={plainText} /> */}
         <div className="article">
           {article?.excerpt?.root ? (
             <RichText data={article.excerpt} enableGutter={false} />
@@ -425,7 +450,7 @@ export default async function ArticleDetailPage(props: { params: Promise<{ slug:
         </div>
 
         {/* Tags */}
-        {article.tags?.length > 0 && (
+        {/* {article.tags?.length > 0 && (
           <div className="tags-line">
             <span className="tags-label">Tags:</span>
             {article.tags.map(tag => (
@@ -435,6 +460,21 @@ export default async function ArticleDetailPage(props: { params: Promise<{ slug:
                 className="tag-detail"
               >
                 {tag.tag}
+              </Link>
+            ))}
+          </div>
+        )} */}
+        {article.tags?.length > 0 && (
+          <div className="tags-line">
+            <span className="tags-label">Tags:</span>
+            {article.tags.map((tag: any) => (
+              <Link
+                key={tag.id}
+                // href={`/tag/${tag.slug}`}
+                href="#"
+                className="tag-detail"
+              >
+                {tag.name}
               </Link>
             ))}
           </div>
@@ -448,26 +488,38 @@ export default async function ArticleDetailPage(props: { params: Promise<{ slug:
             </div>
 
             <div className="related-grid">
-              {relatedRes.docs.map(rel => (
-                <div key={rel.id} className="news-card">
-                  <div className="image-wrapper">
-                    <Link href={`/articles/${rel.slug}`}>
-                      <img
-                        src={rel.featuredImage?.url || rel.videoThumbnail?.url || ''}
-                        alt={rel.title}
-                      />
-                    </Link>
-                    <div className="badge">
-                      {rel.articleType?.name}
+              {relatedRes.docs.map((rel, index) => {
+                // Determine if it's a large card (first 2) or small card
+                const isLargeCard = index < 2;
+                
+                return (
+                  <div key={rel.id} className="news-card">
+                    <div className="image-wrapper">
+                      <Link href={`/articles/${rel.slug}`}>
+                        <div className={`related-image-container ${isLargeCard ? 'large' : 'small'}`}>
+                          <Image
+                            src={rel.featuredImage?.url || rel.videoThumbnail?.url || ''}
+                            alt={rel.title}
+                            fill
+                            sizes={isLargeCard ? "(max-width: 768px) 100vw, 50vw" : "(max-width: 768px) 100vw, 33vw"}
+                            style={{
+                              objectFit: 'cover'
+                            }}
+                          />
+                        </div>
+                      </Link>
+                      <div className="badge">
+                        {rel.articleType?.name}
+                      </div>
+                    </div>
+                    <div className="news-title">
+                      <Link href={`/articles/${rel.slug}`}>
+                        {rel.title}
+                      </Link>
                     </div>
                   </div>
-                  <div className="news-title">
-                    <Link href={`/articles/${rel.slug}`}>
-                      {rel.title}
-                    </Link>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </>
         )}
@@ -483,9 +535,23 @@ export default async function ArticleDetailPage(props: { params: Promise<{ slug:
 
           {latestRes.docs.map(item => (
             <div key={item.id} className="latest-item">
-              <Link href={`/articles/${item.slug}`}>
-                <img src={item.featuredImage?.url || ''} alt={item.title} />
-              </Link>
+              <div className="latest-image-container">
+                <Link href={`/articles/${item.slug}`}>
+                  {item.featuredImage?.url && (
+                    <Image
+                      src={item.featuredImage.url}
+                      alt={item.title}
+                      width={100}
+                      height={70}
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover'
+                      }}
+                    />
+                  )}
+                </Link>
+              </div>
               <p>
                 <Link href={`/articles/${item.slug}`}>
                   {item.title}

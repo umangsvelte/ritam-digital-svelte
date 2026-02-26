@@ -18,6 +18,9 @@ import ArticleCategories from './collections/Articles/ArticleCategories'
 import { Articles } from './collections/Articles/Articles'
 import VideoCategories from './collections/Videos/VideoCategories'
 import { Videos } from './collections/Videos/Videos'
+import { Tags } from './collections/Articles/ArticleTags'
+import { UserLogs } from './collections/UserLogs'
+import { publishScheduledArticlesTask } from '../src/jobs/publishScheduledArticles'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -31,6 +34,7 @@ export default buildConfig({
       // The `BeforeDashboard` component renders the 'welcome' block that you see after logging into your admin panel.
       // Feel free to delete this at any time. Simply remove the line below.
       beforeDashboard: ['@/components/BeforeDashboard'],
+      // afterNavLinks: ['@/components/AdminLogout'],
     },
     importMap: {
       baseDir: path.resolve(dirname),
@@ -66,7 +70,7 @@ export default buildConfig({
       connectionString: process.env.DATABASE_URL || '',
     },
   }),
-  collections: [Pages, Posts, Media, Categories, Users, ArticleCategories, Articles],
+  collections: [Pages, Posts, Media, Categories, Users, ArticleCategories, Articles, Tags, UserLogs],
   cors: [getServerSideURL()].filter(Boolean),
   globals: [Header, Footer],
   plugins,
@@ -88,6 +92,15 @@ export default buildConfig({
         return authHeader === `Bearer ${process.env.CRON_SECRET}`
       },
     },
-    tasks: [],
+    tasks: [
+      publishScheduledArticlesTask
+    ],
+    autoRun: [
+    {
+      cron: '* * * * *',
+      queue: 'scheduler',
+      limit: 10,
+    },
+  ],
   },
 })

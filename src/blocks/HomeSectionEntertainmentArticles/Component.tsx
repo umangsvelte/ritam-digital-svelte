@@ -114,6 +114,9 @@ export const EntertainmentArticlesBlockComponent = async ({
       mediaType: {
         equals: 'image',
       },
+      _status: {
+        equals: 'published',
+      },
     },
     sort: '-publishedDate',
     limit,

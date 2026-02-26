@@ -74,6 +74,8 @@ export interface Config {
     users: User;
     articleCategories: ArticleCategory;
     articles: Article;
+    articleTags: ArticleTag;
+    userLogs: UserLog;
     redirects: Redirect;
     forms: Form;
     'form-submissions': FormSubmission;
@@ -98,6 +100,8 @@ export interface Config {
     users: UsersSelect<false> | UsersSelect<true>;
     articleCategories: ArticleCategoriesSelect<false> | ArticleCategoriesSelect<true>;
     articles: ArticlesSelect<false> | ArticlesSelect<true>;
+    articleTags: ArticleTagsSelect<false> | ArticleTagsSelect<true>;
+    userLogs: UserLogsSelect<false> | UserLogsSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
@@ -116,17 +120,18 @@ export interface Config {
   globals: {
     header: Header;
     footer: Footer;
+    'payload-jobs-stats': PayloadJobsStat;
   };
   globalsSelect: {
     header: HeaderSelect<false> | HeaderSelect<true>;
     footer: FooterSelect<false> | FooterSelect<true>;
+    'payload-jobs-stats': PayloadJobsStatsSelect<false> | PayloadJobsStatsSelect<true>;
   };
   locale: null;
-  user: User & {
-    collection: 'users';
-  };
+  user: User;
   jobs: {
     tasks: {
+      publishScheduledArticles: TaskPublishScheduledArticles;
       schedulePublish: TaskSchedulePublish;
       inline: {
         input: unknown;
@@ -824,6 +829,7 @@ export interface User {
       }[]
     | null;
   password?: string | null;
+  collection: 'users';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1197,14 +1203,60 @@ export interface Article {
   publishedDate: string;
   author_name?: string | null;
   author?: (number | null) | User;
-  tags?:
-    | {
-        tag?: string | null;
-        id?: string | null;
-      }[]
-    | null;
+  tags?: (number | ArticleTag)[] | null;
   views?: number | null;
+  scheduledRelease?: string | null;
+  meta?: {
+    title?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+    description?: string | null;
+  };
   articleType: number | ArticleCategory;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "articleTags".
+ */
+export interface ArticleTag {
+  id: number;
+  name: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "userLogs".
+ */
+export interface UserLog {
+  id: number;
+  action: 'create' | 'update' | 'delete' | 'scheduled_publish';
+  collection: string;
+  documentId: string;
+  user?: (number | null) | User;
+  previousData?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  newData?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1351,7 +1403,7 @@ export interface PayloadJob {
     | {
         executedAt: string;
         completedAt: string;
-        taskSlug: 'inline' | 'schedulePublish';
+        taskSlug: 'inline' | 'publishScheduledArticles' | 'schedulePublish';
         taskID: string;
         input?:
           | {
@@ -1384,10 +1436,19 @@ export interface PayloadJob {
         id?: string | null;
       }[]
     | null;
-  taskSlug?: ('inline' | 'schedulePublish') | null;
+  taskSlug?: ('inline' | 'publishScheduledArticles' | 'schedulePublish') | null;
   queue?: string | null;
   waitUntil?: string | null;
   processing?: boolean | null;
+  meta?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1425,6 +1486,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'articles';
         value: number | Article;
+      } | null)
+    | ({
+        relationTo: 'articleTags';
+        value: number | ArticleTag;
+      } | null)
+    | ({
+        relationTo: 'userLogs';
+        value: number | UserLog;
       } | null)
     | ({
         relationTo: 'redirects';
@@ -2175,14 +2244,41 @@ export interface ArticlesSelect<T extends boolean = true> {
   publishedDate?: T;
   author_name?: T;
   author?: T;
-  tags?:
+  tags?: T;
+  views?: T;
+  scheduledRelease?: T;
+  meta?:
     | T
     | {
-        tag?: T;
-        id?: T;
+        title?: T;
+        image?: T;
+        description?: T;
       };
-  views?: T;
   articleType?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "articleTags_select".
+ */
+export interface ArticleTagsSelect<T extends boolean = true> {
+  name?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "userLogs_select".
+ */
+export interface UserLogsSelect<T extends boolean = true> {
+  action?: T;
+  collection?: T;
+  documentId?: T;
+  user?: T;
+  previousData?: T;
+  newData?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2414,6 +2510,7 @@ export interface PayloadJobsSelect<T extends boolean = true> {
   queue?: T;
   waitUntil?: T;
   processing?: T;
+  meta?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2556,6 +2653,24 @@ export interface Footer {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-jobs-stats".
+ */
+export interface PayloadJobsStat {
+  id: number;
+  stats?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "header_select".
  */
 export interface HeaderSelect<T extends boolean = true> {
@@ -2622,6 +2737,24 @@ export interface FooterSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-jobs-stats_select".
+ */
+export interface PayloadJobsStatsSelect<T extends boolean = true> {
+  stats?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskPublishScheduledArticles".
+ */
+export interface TaskPublishScheduledArticles {
+  input?: unknown;
+  output?: unknown;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

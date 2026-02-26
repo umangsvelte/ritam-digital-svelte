@@ -98,6 +98,9 @@ export const WorldArticlesBlockComponent = async ({
       mediaType: {
         equals: 'image',
       },
+      _status: {
+        equals: 'published',
+      },
     },
     sort: '-publishedDate',
     limit,

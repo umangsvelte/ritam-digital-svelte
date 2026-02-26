@@ -90,6 +90,7 @@
 
 'use client'
 
+import { Link } from 'lucide-react'
 import { useState } from 'react'
 
 type Props = {
@@ -115,38 +116,44 @@ export default function VideoPlaylistClient({ articles }: Props) {
       {/* Currently Playing */}
       <div className="video-current">
         <span>CURRENTLY PLAYING</span>
-        <h4 id="videoTitle">
-          {currentVideo.title}
-        </h4>
+        <a href={`/articles/${currentVideo.slug}`}>
+          <h4 id="videoTitle">
+            {currentVideo.title}
+          </h4>
+        </a>
       </div>
 
       {/* Playlist */}
       <div className="video-playlist">
         {articles.map((article: any) => {
-          const thumb =
-            article.youtubeVideoId
-              ? `https://img.youtube.com/vi/${article.youtubeVideoId}/mqdefault.jpg`
-              : ''
+          const thumb = article.youtubeVideoId
+            ? `https://img.youtube.com/vi/${article.youtubeVideoId}/mqdefault.jpg`
+            : ''
 
           const isActive = article.id === currentVideo.id
 
           return (
             <div
               key={article.id}
-              className="video-item"
+              className={`video-item ${isActive ? 'active' : ''}`}
               onClick={() => setCurrentVideo(article)}
-              style={{
-                cursor: 'pointer',
-                opacity: isActive ? 0.7 : 1,
-              }}
             >
-              <img src={thumb} alt={article.title} />
+              <div className="video-thumb">
+                <img src={thumb} alt={article.title} />
 
-              <span className="video-date">
-                {article.publishedDateFormatted}
-              </span>
+                {/* Date badge */}
+                <span className="video-date">
+                  {article.publishedDateFormatted}
+                </span>
+              </div>
 
-              <p>{article.title}</p>
+              {/* TEXT BELOW IMAGE */}
+              <div className="video-info">
+                <h5 className="video-title">{article.title}</h5>
+                <span className="video-category">
+                  {article.articleType?.name || 'NATION'}
+                </span>
+              </div>
             </div>
           )
         })}

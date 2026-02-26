@@ -69,7 +69,7 @@ export default function WebStoriesComponent(props: any) {
         
         {/* Header */}
         <div className="section-header-line">
-          <h2 className="section-title">{title}</h2>
+          <h2 className="section-heading">{title}</h2>
         </div>
 
         {/* Stories Row */}
@@ -87,14 +87,27 @@ export default function WebStoriesComponent(props: any) {
                 className="story-card"
                 onClick={() => setActiveStoryIndex(index)}
               >
-                {mediaUrl && (
-                  <Image
-                    src={mediaUrl}
-                    alt={story.storyTitle}
-                    width={200}
-                    height={350}
-                  />
-                )}
+                <div className="story-image-container">
+                  {/* {mediaUrl && (
+                    <Image
+                      src={mediaUrl}
+                      alt={story.storyTitle}
+                      width={200}
+                      height={350}
+                    />
+                  )} */}
+                  {mediaUrl && (
+                    <Image
+                      src={mediaUrl}
+                      alt={story.storyTitle}
+                      fill
+                      sizes="160px"
+                      style={{
+                        objectFit: 'cover',
+                      }}
+                    />
+                  )}
+                </div>
                 <p>{story.storyTitle}</p>
               </div>
             )

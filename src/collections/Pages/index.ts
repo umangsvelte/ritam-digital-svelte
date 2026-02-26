@@ -63,6 +63,7 @@ export const Pages: CollectionConfig<'pages'> = {
         req,
       }),
     useAsTitle: 'title',
+    hideAPIURL: true,
   },
   fields: [
     {

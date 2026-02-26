@@ -35,10 +35,24 @@ export const Users: CollectionConfig = {
   admin: {
     useAsTitle: 'name',
     defaultColumns: ['name', 'email', 'role'],
+    hideAPIURL: true,
   },
 
   access: {
-    read: () => true, // public
+    read: ({ req }) => {
+      const hiddenEmail = 'superadmin@gmail.com'
+
+      // Always allow user to see themselves
+      if (req.user?.email === hiddenEmail) {
+        return true
+      }
+
+      return {
+        email: {
+          not_equals: hiddenEmail,
+        },
+      }
+    },
 
     create: ({ req }) => {
       return req.user?.role === 'admin' || req.user?.role === 'author'
@@ -47,9 +61,9 @@ export const Users: CollectionConfig = {
     update: ({ req }) => {
       if (req.user?.role === 'admin') return true
 
-      // author can update only their own articles
+      // author can update only their own user record
       return {
-        author: {
+        id: {
           equals: req.user?.id,
         },
       }

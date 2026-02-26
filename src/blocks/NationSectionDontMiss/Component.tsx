@@ -99,6 +99,7 @@ import Link from 'next/link'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import type { Article } from '@/payload-types'
+import Image from 'next/image'
 
 type Props = {
   title: string
@@ -150,10 +151,23 @@ export const DontMissComponent = async ({
               <Link href={`/articles/${article.slug}`}>
                 <span>{article.title}</span>
               </Link>
-
-              <Link href={`/articles/${article.slug}`}>
-                <img src={image || ''} alt={article.title} />
-              </Link>
+              <div className="rd-dontmiss-image-container">
+                <Link href={`/articles/${article.slug}`}>
+                  {image && (
+                    <Image
+                      src={image}
+                      alt={article.title}
+                      width={120}
+                      height={86}
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover'
+                      }}
+                    />
+                  )}
+                </Link>
+              </div>
             </li>
           )
         })}

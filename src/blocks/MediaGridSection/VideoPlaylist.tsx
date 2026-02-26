@@ -125,6 +125,7 @@
 
 import { useMemo, useState } from 'react'
 import { getYoutubeId } from '@/utils/getYoutubeId'
+import Image from 'next/image'
 
 export default function VideoPlaylist({ videos = [] }) {
   const playlist = useMemo(() => {
@@ -188,11 +189,22 @@ export default function VideoPlaylist({ videos = [] }) {
                 {/* Indicator */}
                 <div className="rt-video-item-indicator" />
 
-                {/* Thumbnail */}
-                <img
-                  src={video.videoThumbnail?.url}
-                  alt={video.title}
-                />
+                {/* Thumbnail with fixed container */}
+                <div className="rt-video-thumbnail-container">
+                  {video.videoThumbnail?.url && (
+                    <Image
+                      src={video.videoThumbnail.url}
+                      alt={video.title}
+                      width={120}
+                      height={70}
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover'
+                      }}
+                    />
+                  )}
+                </div>
 
                 <div className="rt-video-info">
                   <h4 className="line-clamp-2">{video.title}</h4>

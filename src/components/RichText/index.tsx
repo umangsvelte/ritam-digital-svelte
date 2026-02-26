@@ -105,6 +105,7 @@ import { BannerBlock } from '@/blocks/Banner/Component'
 import { CallToActionBlock } from '@/blocks/CallToAction/Component'
 import { cn } from '@/utilities/ui'
 import React from 'react'
+import TwitterEmbed from '@/components/TwitterEmbed'
 
 type NodeTypes =
   | DefaultNodeTypes
@@ -120,6 +121,28 @@ const internalDocToHref = ({ linkNode }: { linkNode: SerializedLinkNode }) => {
 const jsxConverters: JSXConvertersFunction<NodeTypes> = ({ defaultConverters }) => ({
   ...defaultConverters,
   ...LinkJSXConverter({ internalDocToHref }),
+  paragraph: ({ node, nodesToJSX }) => {
+    const children = nodesToJSX({
+      nodes: node.children,
+    })
+
+    // Detect single plain-text child
+    if (
+      node.children.length === 1 &&
+      node.children[0].type === 'text'
+    ) {
+      const text = node.children[0].text
+
+      if (
+        text.includes('twitter.com') ||
+        text.includes('x.com')
+      ) {
+        return <TwitterEmbed url={text} />
+      }
+    }
+
+    return <p>{children}</p>
+  },
 
   text: ({ node, childIndex, converters, nodesToJSX, parent }) => {
   // Let default converter handle semantic tags like <strong>, <em>, <u>

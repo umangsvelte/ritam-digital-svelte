@@ -7,7 +7,14 @@ export const getTopVideos = async () => {
   const res = await payload.find({
     collection: 'articles',
     where: {
-      mediaType: { equals: 'video' },
+      and: [
+        {
+          mediaType: { equals: 'video' },
+        },
+        {
+          _status: { equals: 'published' },
+        },
+      ],
     },
     sort: '-views',
     limit: 10,

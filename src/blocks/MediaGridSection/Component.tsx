@@ -76,6 +76,9 @@ export default async function MediaGridSection({
       mediaType: {
         equals: 'image',
       },
+      _status: {
+        equals: 'published',
+      },
     },
     sort: '-publishedDate',
     limit: rightArticleLimit ?? 8,

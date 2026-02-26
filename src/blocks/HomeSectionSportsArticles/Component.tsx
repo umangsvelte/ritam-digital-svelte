@@ -142,6 +142,9 @@ export const SportsArticlesBlockComponent = async ({
       mediaType: {
         equals: 'image',
       },
+      _status: {
+        equals: 'published',
+      },
     },
     sort: '-publishedDate',
     limit,
@@ -196,16 +199,18 @@ export const SportsArticlesBlockComponent = async ({
               key={article.id}
               className="sports-side-post"
             >
-              <Link href={`/articles/${article.slug}`}>
-                {article.featuredImage?.url && (
-                  <Image
-                    src={article.featuredImage.url}
-                    alt={article.title}
-                    width={120}
-                    height={80}
-                  />
-                )}
-              </Link>
+              <div className="thumbnail-container">
+                <Link href={`/articles/${article.slug}`}>
+                  {article.featuredImage?.url && (
+                    <Image
+                      src={article.featuredImage.url}
+                      alt={article.title}
+                      width={120}
+                      height={80}
+                    />
+                  )}
+                </Link>
+              </div>
 
               <h4>
                 <Link href={`/articles/${article.slug}`}>

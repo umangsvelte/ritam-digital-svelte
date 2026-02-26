@@ -243,7 +243,7 @@ export const LatestNationalNewsComponent = async ({
           </div>
 
           {/* RIGHT SIDEBAR */}
-          <aside className="rd-nation-sidebar">
+          {/* <aside className="rd-nation-sidebar">
             {rightArticles.map((article: Article) => {
               const image =
                 typeof article.featuredImage === 'object'
@@ -258,6 +258,32 @@ export const LatestNationalNewsComponent = async ({
                   <Link href={`/articles/${article.slug}`}>
                     <img src={image || ''} alt={article.title} />
                   </Link>
+
+                  <p>
+                    <Link href={`/articles/${article.slug}`}>
+                      {article.title}
+                    </Link>
+                  </p>
+                </div>
+              )
+            })}
+          </aside> */}
+          <aside className="rd-nation-sidebar">
+            {rightArticles.map((article: Article) => {
+              const image =
+                typeof article.featuredImage === 'object'
+                  ? article.featuredImage?.url
+                  : ''
+
+              return (
+                <div key={article.id} className="rd-side-item">
+                  
+                  {/* IMAGE WRAPPER */}
+                  <div className="rd-side-thumb">
+                    <Link href={`/articles/${article.slug}`}>
+                      <img src={image || ''} alt={article.title} />
+                    </Link>
+                  </div>
 
                   <p>
                     <Link href={`/articles/${article.slug}`}>

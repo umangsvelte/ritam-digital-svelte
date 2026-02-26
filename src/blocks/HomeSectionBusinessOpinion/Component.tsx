@@ -84,6 +84,7 @@
 import Link from 'next/link'
 import { getPayload } from 'payload'
 import config from '@payload-config'
+import Image from 'next/image'
 
 type Props = {
   title: string
@@ -114,6 +115,9 @@ export const HomeSectionBusinessOpinionComponent = async ({
       mediaType: {
         equals: 'image',
       },
+      _status: {
+        equals: 'published',
+      },
     },
     sort: '-publishedDate',
     limit,
@@ -124,7 +128,7 @@ export const HomeSectionBusinessOpinionComponent = async ({
   return (
     <div className="business">
       <div className="section-header-line">
-        <h2 className="section-title">{title}</h2>
+        <h2 className="section-heading">{title}</h2>
       </div>
 
       {/* First Row */}
@@ -138,12 +142,24 @@ export const HomeSectionBusinessOpinionComponent = async ({
           return (
             <div key={article.id} className="news-card">
               <Link href={`/articles/${article.slug}`}>
-                <img src={imageUrl || ''} alt={article.title} />
+                <div className="news-card-image-container">
+                  {imageUrl && (
+                    <Image
+                      src={imageUrl}
+                      alt={article.title}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                      style={{
+                        objectFit: 'cover'
+                      }}
+                    />
+                  )}
+                  <span className="tag">
+                    {article?.articleType?.name ?? 'BUSINESS'}
+                  </span>
+                </div>
               </Link>
 
-              <span className="tag">
-                {article?.articleType?.name ?? 'BUSINESS'}
-              </span>
 
               <h3>
                 <Link href={`/articles/${article.slug}`}>
@@ -166,12 +182,23 @@ export const HomeSectionBusinessOpinionComponent = async ({
           return (
             <div key={article.id} className="news-card">
               <Link href={`/articles/${article.slug}`}>
-                <img src={imageUrl || ''} alt={article.title} />
+                <div className="news-card-image-container">
+                  {imageUrl && (
+                    <Image
+                      src={imageUrl}
+                      alt={article.title}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                      style={{
+                        objectFit: 'cover'
+                      }}
+                    />
+                  )}
+                  <span className="tag">
+                    {article?.articleType?.name ?? 'BUSINESS'}
+                  </span>
+                </div>
               </Link>
-
-              <span className="tag">
-                {article?.articleType?.name ?? 'BUSINESS'}
-              </span>
 
               <h3>
                 <Link href={`/articles/${article.slug}`}>

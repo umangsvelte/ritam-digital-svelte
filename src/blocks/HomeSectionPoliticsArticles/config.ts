@@ -25,7 +25,7 @@ export const PoliticsArticlesBlock: Block = {
       name: 'limit',
       label: 'Total Articles',
       type: 'number',
-      defaultValue: 10,
+      defaultValue: 8,
       min: 2,
       max: 20,
     },

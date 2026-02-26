@@ -33,6 +33,9 @@ export const LifestyleArticlesBlockComponent = async ({
           articleType: {
             equals: categoryId,
           },
+          _status: {
+            equals: 'published',
+          },
         },
       ]
 
