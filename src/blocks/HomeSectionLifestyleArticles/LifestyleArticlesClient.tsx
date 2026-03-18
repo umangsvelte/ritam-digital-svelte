@@ -239,29 +239,24 @@ export default function LifestyleArticlesClient({
       const el = observerRefs.current[index]
       if (!el) return
 
-      const observer = new IntersectionObserver(
-        entries => {
-          if (
-            entries[0].isIntersecting &&
-            !section.loading &&
-            section.articles.length < section.totalDocs
-          ) {
-            loadMore(index)
-          }
-        },
-        {
-          rootMargin: '200px',
-        }
-      )
+      const observer = new IntersectionObserver(entries => {
+      const current = state[index]
+
+      if (
+        entries[0].isIntersecting &&
+        !current.loading &&
+        current.articles.length < current.totalDocs
+      ) {
+        loadMore(index)
+      }
+    })
 
       observer.observe(el)
       observers.push(observer)
     })
 
-    return () => {
-      observers.forEach(o => o.disconnect())
-    }
-  }, [state])
+    return () => observers.forEach(o => o.disconnect())
+  }, [state.length]) // only when sections count changes
 
   return (
     <section className="lifestyle-section py-6">
