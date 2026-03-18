@@ -165,7 +165,7 @@ type Section = {
   initialArticles: any[]
   totalDocs: number
   limit: number
-  enableLoadMore: boolean // acts as enableInfiniteScroll
+  enableLoadMore: boolean
   categorySlug: string
 }
 
@@ -174,10 +174,7 @@ type Props = {
   sections: Section[]
 }
 
-export default function LifestyleArticlesClient({
-  title,
-  sections,
-}: Props) {
+export default function LifestyleArticlesClient({ title, sections }: Props) {
   const [state, setState] = useState(
     sections.map(section => ({
       ...section,
@@ -188,48 +185,59 @@ export default function LifestyleArticlesClient({
   )
 
   const observerRefs = useRef<(HTMLDivElement | null)[]>([])
+  const loadingRef = useRef<boolean[]>([])
+  const stateRef = useRef(state) // ✅ always up-to-date state
+
+  // ✅ Keep stateRef in sync with state
+  useEffect(() => {
+    stateRef.current = state
+  }, [state])
 
   const loadMore = async (index: number) => {
-    const section = state[index]
+    const section = stateRef.current[index] // ✅ read from ref, not closure
 
-    // جلوگیری duplicate calls
-    if (section.loading) return
+    if (loadingRef.current[index]) return
     if (section.articles.length >= section.totalDocs) return
 
-    setState(prev =>
-      prev.map((s, i) =>
-        i === index ? { ...s, loading: true } : s
+    loadingRef.current[index] = true
+
+    setState(prev => prev.map((s, i) => (i === index ? { ...s, loading: true } : s)))
+
+    try {
+      const lastItem = section.articles[section.articles.length - 1]
+
+      const params = new URLSearchParams({
+        category: section.categoryId,
+        limit: String(section.limit),
+        lastDate: lastItem?.publishedDate,
+        lastId: lastItem?.id,
+      })
+
+      if (section.mediaType) {
+        params.append('mediaType', section.mediaType)
+      }
+
+      const res = await fetch(`/api/load-articles?${params}`)
+      const data = await res.json()
+
+      setState(prev =>
+        prev.map((s, i) => {
+          if (i !== index) return s
+          return {
+            ...s,
+            articles: [...s.articles, ...data.docs],
+            loading: false,
+          }
+        })
       )
-    )
-
-    const params = new URLSearchParams({
-      category: section.categoryId,
-      page: String(section.page + 1),
-      limit: String(section.limit),
-    })
-
-    if (section.mediaType) {
-      params.append('mediaType', section.mediaType)
+    } catch (err) {
+      console.error(err)
+      setState(prev => prev.map((s, i) => (i === index ? { ...s, loading: false } : s)))
+    } finally {
+      loadingRef.current[index] = false
     }
-
-    const res = await fetch(`/api/load-articles?${params}`)
-    const data = await res.json()
-
-    setState(prev =>
-      prev.map((s, i) =>
-        i === index
-          ? {
-              ...s,
-              articles: [...s.articles, ...data.docs],
-              page: s.page + 1,
-              loading: false,
-            }
-          : s
-      )
-    )
   }
 
-  //  Infinite Scroll Logic
   useEffect(() => {
     const observers: IntersectionObserver[] = []
 
@@ -239,51 +247,51 @@ export default function LifestyleArticlesClient({
       const el = observerRefs.current[index]
       if (!el) return
 
-      const observer = new IntersectionObserver(entries => {
-      const current = state[index]
+      const observer = new IntersectionObserver(
+        entries => {
+          const current = stateRef.current[index] // ✅ always fresh state
 
-      if (
-        entries[0].isIntersecting &&
-        !current.loading &&
-        current.articles.length < current.totalDocs
-      ) {
-        loadMore(index)
-      }
-    })
+          if (
+            entries[0].isIntersecting &&
+            !loadingRef.current[index] &&
+            current.articles.length < current.totalDocs
+          ) {
+            loadMore(index)
+          }
+        },
+        {
+          rootMargin: '100px',
+          threshold: 0.1,
+        }
+      )
 
       observer.observe(el)
       observers.push(observer)
     })
 
     return () => observers.forEach(o => o.disconnect())
-  }, [state.length]) // only when sections count changes
+  }, [state.length]) // ✅ still stable — only re-runs if number of sections changes
 
   return (
     <section className="lifestyle-section py-6">
-
-      {/* Header */}
       <div className="section-header-line">
         <h2 className="section-heading">{title}</h2>
       </div>
 
       {state.map((section, index) => {
         const hasMore =
-          section.enableLoadMore &&
-          section.articles.length < section.totalDocs
+          section.enableLoadMore && section.articles.length < section.totalDocs
 
         return (
           <div key={section.categoryId}>
-
-            {/* No articles */}
             {!section.articles || section.articles.length === 0 ? (
               <div className="text-center py-10">
                 <p>No articles found</p>
               </div>
             ) : (
               <>
-                {/* Grid */}
                 <div className="lifestyle-grid">
-                  {section.articles.map((article) => {
+                  {section.articles.map(article => {
                     const url =
                       article.mediaType === 'image'
                         ? `/articles/${section.categorySlug}/${article.slug}`
@@ -300,7 +308,6 @@ export default function LifestyleArticlesClient({
 
                     return (
                       <article key={article.id} className="lifestyle-item">
-
                         <div className="thumbnail-container relative">
                           <Link href={url}>
                             {imageObj?.url && (
@@ -311,7 +318,6 @@ export default function LifestyleArticlesClient({
                                   width={350}
                                   height={230}
                                 />
-
                                 {article.mediaType === 'video' && (
                                   <div className="absolute inset-0 flex items-center justify-center">
                                     <div className="bg-black/60 rounded-full p-3">
@@ -331,7 +337,6 @@ export default function LifestyleArticlesClient({
                             )}
                           </Link>
                         </div>
-
                         <h3>
                           <Link href={url}>{article.title}</Link>
                         </h3>
@@ -340,15 +345,10 @@ export default function LifestyleArticlesClient({
                   })}
                 </div>
 
-                {/*  Infinite Scroll Trigger */}
                 {hasMore && (
-                  <div
-                    ref={el => (observerRefs.current[index] = el)}
-                    className="h-10"
-                  />
+                  <div ref={el => (observerRefs.current[index] = el)} className="h-10" />
                 )}
 
-                {/* Loader */}
                 {section.loading && (
                   <div className="text-center py-4">
                     <div className="inline-block px-6 py-2 bg-[#ef7f1b] text-white font-semibold rounded-md shadow">

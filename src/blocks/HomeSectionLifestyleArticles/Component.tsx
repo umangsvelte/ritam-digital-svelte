@@ -20,65 +20,64 @@ export const LifestyleArticlesBlockComponent = async ({
   categoryConfigs,
 }: Props) => {
   const payload = await getPayload({ config: configPromise })
-  
+
+  const slugify = (str: string) =>
+    str
+      .toLowerCase()
+      .trim()
+      .replace(/[^\w\s-]/g, '')
+      .replace(/\s+/g, '-')
 
   const sections = await Promise.all(
-  categoryConfigs.map(async config => {
-    const categoryId =
-      typeof config.articleCategory === 'object'
-        ? config.articleCategory.id
-        : config.articleCategory
-
-    const slugify = (str: string) =>
-      str
-        .toLowerCase()
-        .trim()
-        .replace(/[^\w\s-]/g, '') // remove special chars
-        .replace(/\s+/g, '-')
-
-    const sectionCategorySlug =
-      typeof config.articleCategory === 'object'
-        ? slugify(config.articleCategory.name)
-        : ''
-
-    const effectiveLimit =
-      typeof config.limit === 'number' && config.limit > 0
-        ? config.limit
-        : 9
-
-    const result = await payload.find({
-      collection: 'articles',
-      where: {
-        and: [
-          {
-            articleType: { equals: categoryId },
-            _status: { equals: 'published' },
-          },
-          ...(config.mediaType
-            ? [{ mediaType: { equals: config.mediaType } }]
-            : []),
-        ],
-      },
-      sort: '-publishedDate',
-      page: 1,
-      limit: effectiveLimit,
-    })
-
-    return {
-      categoryId,
-      categoryName:
+    categoryConfigs.map(async config => {
+      const categoryId =
         typeof config.articleCategory === 'object'
-          ? config.articleCategory.name
-          : '',
-      mediaType: config.mediaType,
-      initialArticles: result.docs,
-      totalDocs: result.totalDocs,
-      limit: effectiveLimit,
-      enableLoadMore: config.enableLoadMore,
-      categorySlug: sectionCategorySlug, //  REQUIRED
-    }
-  })
-)
+          ? config.articleCategory.id
+          : config.articleCategory
+
+      const sectionCategorySlug =
+        typeof config.articleCategory === 'object'
+          ? slugify(config.articleCategory.name)
+          : ''
+
+      const effectiveLimit =
+        typeof config.limit === 'number' && config.limit > 0
+          ? config.limit
+          : 9
+
+      const result = await payload.find({
+        collection: 'articles',
+        where: {
+          and: [
+            {
+              articleType: { equals: categoryId },
+              _status: { equals: 'published' },
+            },
+            ...(config.mediaType
+              ? [{ mediaType: { equals: config.mediaType } }]
+              : []),
+          ],
+        },
+        sort: ['-publishedDate', '-id'], // ✅ stable sort
+        page: 1,
+        limit: effectiveLimit,
+      })
+
+      return {
+        categoryId,
+        categoryName:
+          typeof config.articleCategory === 'object'
+            ? config.articleCategory.name
+            : '',
+        mediaType: config.mediaType,
+        initialArticles: result.docs,
+        totalDocs: result.totalDocs,
+        limit: effectiveLimit,
+        enableLoadMore: config.enableLoadMore,
+        categorySlug: sectionCategorySlug,
+      }
+    })
+  )
 
   return (
     <LifestyleArticlesClient
