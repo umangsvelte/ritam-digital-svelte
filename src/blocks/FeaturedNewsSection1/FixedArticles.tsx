@@ -1,14 +1,24 @@
 import Image from 'next/image'
 import Link from 'next/link'
+import { getCategorySlug } from '@/utils/getCategorySlug'
 
 export default function FixedArticles({ articles }: any) {
   if (!articles?.length) return null
 
   return (
     <div className="sub-articles-row">
-      {articles.map((article: any) => (
+      {articles.map((article: any) => {
+
+      const categorySlug = getCategorySlug(article)
+
+      const url =
+        article.mediaType === 'image'
+          ? `/articles/${categorySlug}/${article.slug}`
+          : `/videos/${categorySlug}/${article.slug}`
+
+      return (
         <article key={article.id} className="sub-article">
-          <Link href={`/articles/${article.slug}`}>
+          <Link href={url}>
             <div className="thumbnail-container">
               {article.featuredImage && (
                 <Image
@@ -24,7 +34,7 @@ export default function FixedArticles({ articles }: any) {
             </h3>
           </Link>
         </article>
-      ))}
+      )})}
     </div>
   )
 }

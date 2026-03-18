@@ -13,6 +13,7 @@ import { slugField } from '@/fields/slug'
 import { populatePublishedAt } from '../../hooks/populatePublishedAt'
 import { generatePreviewPath } from '../../utilities/generatePreviewPath'
 import { revalidateDelete, revalidatePage } from './hooks/revalidatePage'
+import { generateFullSlug } from './hooks/generateFullSlug'
 
 import {
   MetaDescriptionField,
@@ -45,6 +46,7 @@ export const Pages: CollectionConfig<'pages'> = {
   defaultPopulate: {
     title: true,
     slug: true,
+    fullSlug:true,
   },
   admin: {
     defaultColumns: ['title', 'slug', 'updatedAt'],
@@ -145,10 +147,19 @@ export const Pages: CollectionConfig<'pages'> = {
       },
     },
     ...slugField(),
+    {
+      name: 'fullSlug',
+      type: 'text',
+      admin: {
+        readOnly: true,
+        position: 'sidebar',
+      },
+      index: true,
+    },
   ],
   hooks: {
     afterChange: [revalidatePage],
-    beforeChange: [populatePublishedAt],
+    beforeChange: [populatePublishedAt, generateFullSlug],
     afterDelete: [revalidateDelete],
   },
   versions: {

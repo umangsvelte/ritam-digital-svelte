@@ -6,6 +6,7 @@ import 'swiper/css'
 import 'swiper/css/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
+import { getCategorySlug } from '@/utils/getCategorySlug'
 
 export default function HeroSlider({ articles }: any) {
   if (!articles?.length) return null
@@ -13,9 +14,18 @@ export default function HeroSlider({ articles }: any) {
   return (
     <article className="featured-article">
       <Swiper modules={[Navigation]} navigation loop>
-        {articles.map((article: any) => (
+        {articles.map((article: any) => {
+
+        const categorySlug = getCategorySlug(article)
+
+        const url =
+          article.mediaType === 'image'
+            ? `/articles/${categorySlug}/${article.slug}`
+            : `/videos/${categorySlug}/${article.slug}`
+
+        return (
           <SwiperSlide key={article.id}>
-            <Link href={`/articles/${article.slug}`}>
+            <Link href={url}>
               <div className="thumbnail-container">
                 {(article.featuredImage || article.videoThumbnail) && (
                   <Image
@@ -42,7 +52,7 @@ export default function HeroSlider({ articles }: any) {
               </div>
             </Link>
           </SwiperSlide>
-        ))}
+        )})}
       </Swiper>
     </article>
   )

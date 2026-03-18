@@ -86,6 +86,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { getPayload } from 'payload'
 import config from '@payload-config'
+import { getCategorySlug } from '@/utils/getCategorySlug'
 
 type Props = {
   title?: string
@@ -137,14 +138,48 @@ export const PoliticsArticlesBlockComponent = async ({
 
       {/* Posts Grid */}
       <div className="category-posts two-column-grid">
-        {res.docs.map((article) => (
+        {res.docs.map((article) => {
+          const categorySlug = getCategorySlug(article)
+
+          const url =
+            article.mediaType === 'image'
+              ? `/articles/${categorySlug}/${article.slug}`
+              : `/videos/${categorySlug}/${article.slug}`
+
+          return (
+            <article
+              key={article.id}
+              className="category-post-item category-card"
+            >
+              <div className="thumbnail-container">
+                {article.featuredImage?.url && (
+                  <Link href={url}>
+                    <Image
+                      src={article.featuredImage.url}
+                      alt={article.title}
+                      width={200}
+                      height={133}
+                    />
+                  </Link>
+                )}
+              </div>
+
+              <h3>
+                <Link href={url}>
+                  {article.title}
+                </Link>
+              </h3>
+            </article>
+          )
+        })}
+        {/* {res.docs.map((article) => (
           <article
             key={article.id}
             className="category-post-item category-card"
           >
             <div className="thumbnail-container">
               {article.featuredImage?.url && (
-                <Link href={`/articles/${article.slug}`}>
+                <Link href={article.mediaType === 'image' ? `/articles/${article.slug}` : `/videos/${article.slug}`}>
                   <Image
                     src={article.featuredImage.url}
                     alt={article.title}
@@ -156,12 +191,12 @@ export const PoliticsArticlesBlockComponent = async ({
             </div>
 
             <h3>
-              <Link href={`/articles/${article.slug}`}>
+              <Link href={article.mediaType === 'image' ? `/articles/${article.slug}` : `/videos/${article.slug}`}>
                 {article.title}
               </Link>
             </h3>
           </article>
-        ))}
+        ))} */}
       </div>
     </div>
   )

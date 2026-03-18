@@ -1,6 +1,6 @@
 import type { CollectionConfig } from 'payload'
 import  formatSlug  from '../../hooks/formatSlug';
-import { lexicalEditor, HeadingFeature,FixedToolbarFeature, InlineToolbarFeature, AlignFeature , BlocksFeature, LinkFeature, UploadFeature} from '@payloadcms/richtext-lexical';
+import { lexicalEditor, HeadingFeature,FixedToolbarFeature, InlineToolbarFeature, AlignFeature , BlocksFeature, LinkFeature, UploadFeature,BoldFeature, ItalicFeature, UnderlineFeature, UnorderedListFeature, OrderedListFeature, ChecklistFeature, BlockquoteFeature} from '@payloadcms/richtext-lexical';
 import { BgColorFeature, HighlightColorFeature, TextColorFeature, YoutubeFeature, VimeoFeature } from 'payloadcms-lexical-ext';
 import { generatePreviewPath } from '../../utilities/generatePreviewPath'
 import {
@@ -10,6 +10,7 @@ import {
   OverviewField,
   PreviewField,
 } from '@payloadcms/plugin-seo/fields'
+import { extractTextFromRichText } from '@/utils/extractRichText'
 
 export const Articles: CollectionConfig = {
   slug: 'articles',
@@ -69,6 +70,25 @@ export const Articles: CollectionConfig = {
     },
   },
   hooks: {
+    beforeChange: [
+      ({ data, originalDoc }) => {
+
+        const scheduledDate =
+          data?.scheduledRelease ||
+          originalDoc?.scheduledRelease
+
+        if (
+          data._status === 'published' &&
+          !data.publishedDate &&
+          scheduledDate
+        ) {
+          data.publishedDate = scheduledDate
+        }
+
+        return data
+      },
+    ],
+
     afterChange: [
       async (args) => {
         try {
@@ -87,12 +107,16 @@ export const Articles: CollectionConfig = {
             const populated = { ...data }
             
             // Populate articleType if it exists
-            if (data.articleType) {
-              populated.articleType = await req.payload.findByID({
-                collection: 'articleCategories',
-                id: typeof data.articleType === 'object' ? data.articleType.id : data.articleType,
-                depth: 1,
-              })
+            if (data.articleType && Array.isArray(data.articleType)) {
+              populated.articleType = await Promise.all(
+                data.articleType.map(async (cat: any) => {
+                  return await req.payload.findByID({
+                    collection: 'articleCategories',
+                    id: typeof cat === 'object' ? cat.id : cat,
+                    depth: 1,
+                  })
+                })
+              )
             }
             
             // Populate featuredImage if it exists
@@ -176,6 +200,47 @@ export const Articles: CollectionConfig = {
         }
       },
     ],
+    beforeValidate: [
+      ({ data }) => {
+        if (!data?.content?.root?.children?.length) return data
+
+        const plainText = extractTextFromRichText(data.content)
+
+        if (plainText) {
+          const trimmed = plainText.replace(/\s+/g, ' ').trim()
+
+          const words = trimmed.split(' ')
+          const wordLimit = 60 // change this number as needed
+
+          const limitedText =
+            words.length > wordLimit
+              ? words.slice(0, wordLimit).join(' ') + '...'
+              : trimmed
+
+          data.excerpt = {
+            root: {
+              type: 'root',
+              children: [
+                {
+                  type: 'paragraph',
+                  children: [
+                    {
+                      type: 'text',
+                      text: limitedText,
+                      version: 1,
+                    },
+                  ],
+                  version: 1,
+                },
+              ],
+              version: 1,
+            },
+          }
+        }
+
+        return data
+      },
+    ]
   },
   admin: {
     useAsTitle: 'title',
@@ -183,7 +248,7 @@ export const Articles: CollectionConfig = {
       'title',
       'slug',
       'mediaType',
-      'excerpt',
+      'featuredImage',
       'articleType', 
     ],
     hideAPIURL: true,
@@ -207,6 +272,12 @@ export const Articles: CollectionConfig = {
       name: 'title',
       type: 'text',
       required: true,
+    
+    },
+    {
+      name: 'subtitle',
+      type: 'textarea',
+      required: false,
     
     },
     {
@@ -243,12 +314,12 @@ export const Articles: CollectionConfig = {
       admin: {
         condition: (_, siblingData) => siblingData.mediaType === 'image',
       },
-      validate: (value, { siblingData }) => {
-        if (siblingData.mediaType === 'image' && !value) {
-          return 'Featured image is required for image articles'
-        }
-        return true
-      },
+      // validate: (value, { siblingData }) => {
+      //   if (siblingData.mediaType === 'image' && !value) {
+      //     return 'Featured image is required for image articles'
+      //   }
+      //   return true
+      // },
     },
 
     // VIDEO URL
@@ -259,12 +330,12 @@ export const Articles: CollectionConfig = {
       admin: {
         condition: (_, siblingData) => siblingData.mediaType === 'video',
       },
-      validate: (value, { siblingData }) => {
-        if (siblingData.mediaType === 'video' && !value) {
-          return 'Video URL is required when media type is video'
-        }
-        return true
-      },
+      // validate: (value, { siblingData }) => {
+      //   if (siblingData.mediaType === 'video' && !value) {
+      //     return 'Video URL is required when media type is video'
+      //   }
+      //   return true
+      // },
     },
 
     // VIDEO THUMBNAIL
@@ -276,39 +347,39 @@ export const Articles: CollectionConfig = {
       admin: {
         condition: (_, siblingData) => siblingData.mediaType === 'video',
       },
-      validate: (value, { siblingData }) => {
-        if (siblingData.mediaType === 'video' && !value) {
-          return 'Video thumbnail is required for video articles'
-        }
-        return true
-      },
+      // validate: (value, { siblingData }) => {
+      //   if (siblingData.mediaType === 'video' && !value) {
+      //     return 'Video thumbnail is required for video articles'
+      //   }
+      //   return true
+      // },
     },
     {
-      name: 'excerpt',
-      type: 'richText', // Corrected type
+      name: 'content',
+      type: 'richText',
+      required: false,
       editor: lexicalEditor({
-        features: ({ rootFeatures }) => {
-          return [
-            ...rootFeatures,
-            LinkFeature({
-                // Example showing how to customize the built-in fields
-                // of the Link feature
-                fields: ({ defaultFields }) => [
-                ...defaultFields,
-                {
-                    name: 'rel',
-                    label: 'Rel Attribute',
-                    type: 'select',
-                    hasMany: true,
-                    options: ['noopener', 'noreferrer', 'nofollow'],
-                    admin: {
-                    description:
-                        'The rel attribute defines the relationship between a linked resource and the current document. This is a custom link field.',
-                    },
-                },
-                ],
-            }),
-            UploadFeature({
+        features: ({ rootFeatures }) => [
+          ...rootFeatures,
+          LinkFeature({
+              // Example showing how to customize the built-in fields
+              // of the Link feature
+              fields: ({ defaultFields }) => [
+              ...defaultFields,
+              {
+                  name: 'rel',
+                  label: 'Rel Attribute',
+                  type: 'select',
+                  hasMany: true,
+                  options: ['noopener', 'noreferrer', 'nofollow'],
+                  admin: {
+                  description:
+                      'The rel attribute defines the relationship between a linked resource and the current document. This is a custom link field.',
+                  },
+              },
+              ],
+          }),
+          UploadFeature({
                 collections: {
                 uploads: {
                     // Example showing how to customize the built-in fields
@@ -323,19 +394,25 @@ export const Articles: CollectionConfig = {
                 },
                 },
             }),
-            // This is incredibly powerful. You can reuse your Payload blocks
-            // directly in the Lexical editor as follows:
-            BlocksFeature({
-                // blocks: [Banner, CallToAction],
-            }),
-            HeadingFeature({ enabledHeadingSizes: ['h1','h2', 'h3', 'h4', 'h5', 'h6'] }),
-            FixedToolbarFeature(),
-            InlineToolbarFeature(),
-            AlignFeature(),
-            TextColorFeature(),
-            HighlightColorFeature(),
-          ]
-        },
+          BlocksFeature({
+              // blocks: [Banner, CallToAction],
+          }),
+          HeadingFeature({ enabledHeadingSizes: ['h1','h2','h3','h4','h5','h6'] }),
+          FixedToolbarFeature(),
+          InlineToolbarFeature(),
+          BoldFeature(),
+          ItalicFeature(),
+          UnderlineFeature(),
+          UnorderedListFeature(),
+          OrderedListFeature(),
+          ChecklistFeature(),
+          BlockquoteFeature(),
+          AlignFeature(),
+          TextColorFeature(),
+          HighlightColorFeature(),
+          YoutubeFeature(),
+          VimeoFeature(),
+        ],
       }),
       defaultValue: {
         root: {
@@ -356,21 +433,19 @@ export const Articles: CollectionConfig = {
           version: 1,
         },
       },
-
+    },
+    {
+      name: 'excerpt',
+      type: 'richText',
+      admin: {
+        readOnly: true,
+        description: 'Automatically generated from content (first 400 characters)',
+      },
     },
     {
       name: 'publishedDate',
       type: 'date',
-      required: true,
-    },
-    {
-      name: 'author_name',
-      type: 'text',
-      label: 'Author Name',
       required: false,
-      admin: {
-        hidden: true,
-      },
     },
     {
       name: 'author',
@@ -383,6 +458,11 @@ export const Articles: CollectionConfig = {
       type: 'relationship',
       relationTo: 'articleTags',
       hasMany: true,
+      // admin: {
+      //   allowCreate: ({ req }) => {
+      //     return req.user?.role === 'admin'
+      //   },
+      // },
     },
     {
       name: 'views',
@@ -441,6 +521,7 @@ export const Articles: CollectionConfig = {
       relationTo: 'articleCategories', 
       required: true,
       label: 'Article Category',
+      hasMany: true,
       admin: {
         allowCreate: true, // shows the "Add new category" button
       },

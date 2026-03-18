@@ -2,6 +2,10 @@ import { Block } from 'payload'
 
 export const EntertainmentArticlesBlock: Block = {
   slug: 'entertainmentArticles',
+  labels: {
+    singular: 'Entertainment Articles',
+    plural: 'Entertainment Articles',
+  },
   fields: [
     {
       name: 'title',

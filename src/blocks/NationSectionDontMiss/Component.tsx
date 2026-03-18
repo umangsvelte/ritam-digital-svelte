@@ -125,13 +125,18 @@ export const DontMissComponent = async ({
       and: [
         { articleType: { equals: categoryId } },
         { mediaType: { equals: 'image' } },
+        // { views: { equals: 0 } },
       ],
     },
-    sort: '-publishedDate',
+    sort: ['views', '-publishedDate'],
     limit,
   })
 
   if (!docs?.length) return null
+  const categoryName = typeof articleCategory === 'object' ? articleCategory.name : ''
+  const categorySlug = categoryName
+  .toLowerCase()
+  .replace(/\s+/g, '-')
 
   return (
     <aside className="rd-dontmiss-left">
@@ -148,11 +153,19 @@ export const DontMissComponent = async ({
 
           return (
             <li key={article.id}>
-              <Link href={`/articles/${article.slug}`}>
+              <Link href={
+                          article.mediaType === 'image'
+                            ? `/articles/${categorySlug}/${article.slug}`
+                            : `/videos/${categorySlug}/${article.slug}`
+                        }>
                 <span>{article.title}</span>
               </Link>
               <div className="rd-dontmiss-image-container">
-                <Link href={`/articles/${article.slug}`}>
+                <Link href={
+                          article.mediaType === 'image'
+                            ? `/articles/${categorySlug}/${article.slug}`
+                            : `/videos/${categorySlug}/${article.slug}`
+                        }>
                   {image && (
                     <Image
                       src={image}

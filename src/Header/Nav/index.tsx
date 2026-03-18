@@ -72,7 +72,17 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
           <nav className="main-navigation">
             <ul>
               {navItems.map((item) => {
-                const href = resolveLink(item.link)
+
+                let href = resolveLink(item.link)
+                if (href && !href.startsWith('http') && href !== '/' && href !== '/home') {
+                  if (href.startsWith('/videos')) {
+                    href = href
+                  } else if (href === '/videos') {
+                    href = '/videos'
+                  } else {
+                    href = `/articles${href}`
+                  }
+                }
                 // const isActive = pathname === href
                 const isActive = pathname === href || pathname.startsWith(href + "/")
                 const hasSubMenu =
@@ -105,7 +115,32 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
                         {item.subMenu.map((subItem) => (
                           <li key={subItem.id}>
                             <Link
-                              href={resolveLink(subItem.link)}
+                              href={
+                                (() => {
+                                  let subHref = resolveLink(subItem.link)
+
+                                  if (subHref && !subHref.startsWith('http')) {
+
+                                    // parent href detect karo
+                                    const parentHref = href
+
+                                    // video section
+                                    if (parentHref.startsWith('/videos')) {
+                                      if (subHref.startsWith('/videos')) return subHref
+                                      return `/videos${subHref}`
+                                    }
+
+                                    // article section
+                                    if (parentHref !== '/' && parentHref !== '/home') {
+                                      if (subHref.startsWith('/articles')) return subHref
+                                      return `/articles${subHref}`
+                                    }
+
+                                  }
+
+                                  return subHref
+                                })()
+                              }
                               target={subItem.link?.newTab ? '_blank' : undefined}
                               className="block px-4 py-2 text-sm text-white hover:bg-white/10"
                             >
@@ -147,7 +182,17 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
             {/* Mobile Nav */}
             <ul className="mobile-menu">
               {navItems.map((item) => {
-                const href = resolveLink(item.link)
+                let href = resolveLink(item.link)
+
+                if (href && !href.startsWith('http')) {
+                  if (href.startsWith('/videos')) {
+                    href = href
+                  } else if (href === '/videos') {
+                    href = '/videos'
+                  } else {
+                    href = `/articles${href}`
+                  }
+                }
                 const hasSubMenu =
                   Array.isArray(item.subMenu) && item.subMenu.length > 0
 
@@ -193,7 +238,32 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
                           {item.subMenu.map((subItem) => (
                             <li key={subItem.id}>
                               <Link
-                                href={resolveLink(subItem.link)}
+                                href={
+                                  (() => {
+                                    let subHref = resolveLink(subItem.link)
+
+                                    if (subHref && !subHref.startsWith('http')) {
+
+                                      // parent href detect karo
+                                      const parentHref = href
+
+                                      // video section
+                                      if (parentHref.startsWith('/videos')) {
+                                        if (subHref.startsWith('/videos')) return subHref
+                                        return `/videos${subHref}`
+                                      }
+
+                                      // article section
+                                      if (parentHref !== '/' && parentHref !== '/home') {
+                                        if (subHref.startsWith('/articles')) return subHref
+                                        return `/articles${subHref}`
+                                      }
+
+                                    }
+
+                                    return subHref
+                                  })()
+                                }
                                 onClick={() => setOpenMenu(false)}
                               >
                                 {subItem.link?.label}

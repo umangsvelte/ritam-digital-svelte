@@ -95,9 +95,10 @@ import { useState } from 'react'
 
 type Props = {
   articles: any[]
+  categorySlug?:string
 }
 
-export default function VideoPlaylistClient({ articles }: Props) {
+export default function VideoPlaylistClient({ articles,categorySlug }: Props) {
   const [currentVideo, setCurrentVideo] = useState(articles[0])
 
   return (
@@ -116,7 +117,11 @@ export default function VideoPlaylistClient({ articles }: Props) {
       {/* Currently Playing */}
       <div className="video-current">
         <span>CURRENTLY PLAYING</span>
-        <a href={`/articles/${currentVideo.slug}`}>
+        <a href={
+            currentVideo.mediaType === 'image'
+              ? `/articles/${categorySlug}/${currentVideo.slug}`
+              : `/videos/${categorySlug}/${currentVideo.slug}`
+          }>
           <h4 id="videoTitle">
             {currentVideo.title}
           </h4>

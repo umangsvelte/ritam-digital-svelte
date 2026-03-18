@@ -56,8 +56,9 @@ const RichTextRenderer = ({ content }: { content: any }) => {
 
 export const RenderBlocks: React.FC<{
   blocks: Page['layout'][0][]
+  categorySlug?: string
 }> = (props) => {
-  const { blocks } = props
+  const { blocks, categorySlug } = props
 
   const hasBlocks = blocks && Array.isArray(blocks) && blocks.length > 0
 
@@ -105,6 +106,7 @@ export const RenderBlocks: React.FC<{
                       {...processedProps}
                       blockType={blockType}
                       disableInnerContainer
+                      categorySlug={categorySlug}
                     />
                   </div>
                 )

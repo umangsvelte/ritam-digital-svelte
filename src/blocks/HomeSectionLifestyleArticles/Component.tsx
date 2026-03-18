@@ -13,19 +13,22 @@ type CategoryConfig = {
 type Props = {
   title: string
   categoryConfigs: CategoryConfig[]
+  categorySlug?: string
 }
 
 export const LifestyleArticlesBlockComponent = async ({
   title,
   categoryConfigs,
+  categorySlug,
 }: Props) => {
   const payload = await getPayload({ config: configPromise })
+  
 
   const sections = await Promise.all(
     categoryConfigs.map(async config => {
       const categoryId =
         typeof config.articleCategory === 'object'
-          ? config.articleCategory.id
+          ? config?.articleCategory?.id
           : config.articleCategory
 
       const whereConditions: any[] = [
@@ -46,6 +49,8 @@ export const LifestyleArticlesBlockComponent = async ({
           },
         })
       }
+    if(!categorySlug || categorySlug == undefined || categorySlug== null)
+      categorySlug = typeof config.articleCategory === 'object' ? config.articleCategory.name: ''
 
       const effectiveLimit =
       typeof config.limit === 'number' && config.limit > 0
@@ -81,6 +86,7 @@ export const LifestyleArticlesBlockComponent = async ({
     <LifestyleArticlesClient
       title={title}
       sections={sections}
+      categorySlug={categorySlug}
     />
   )
 }

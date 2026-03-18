@@ -126,6 +126,8 @@
 import { useMemo, useState } from 'react'
 import { getYoutubeId } from '@/utils/getYoutubeId'
 import Image from 'next/image'
+import { getCategorySlug } from '@/utils/getCategorySlug'
+import Link from 'next/link'
 
 export default function VideoPlaylist({ videos = [] }) {
   const playlist = useMemo(() => {
@@ -140,6 +142,7 @@ export default function VideoPlaylist({ videos = [] }) {
   const [active, setActive] = useState(playlist[0])
 
   if (!playlist.length || !active) return null
+  const categorySlug = getCategorySlug(active)
 
   return (
     <div>
@@ -172,7 +175,13 @@ export default function VideoPlaylist({ videos = [] }) {
         {/* CURRENTLY PLAYING */}
         <div className="rt-currently-playing">
           <span>Currently Playing</span>
-          <p>{active.title}</p>
+          <Link href={
+            active.mediaType === 'image'
+              ? `/articles/${categorySlug}/${active.slug}`
+              : `/videos/${categorySlug}/${active.slug}`
+          }>
+            <p className="line-clamp-1">{active.title}</p>
+          </Link>
         </div>
 
         {/* VIDEO LIST */}

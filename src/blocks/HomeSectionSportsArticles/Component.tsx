@@ -112,6 +112,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { getPayload } from 'payload'
 import config from '@payload-config'
+import { getCategorySlug } from '@/utils/getCategorySlug'
 
 type Props = {
   title: string
@@ -153,6 +154,13 @@ export const SportsArticlesBlockComponent = async ({
   if (!res.docs.length) return null
 
   const [featured, ...sideArticles] = res.docs
+  const featuredCategorySlug = getCategorySlug(featured)
+
+  const featuredUrl =
+    featured.mediaType === 'image'
+      ? `/articles/${featuredCategorySlug}/${featured.slug}`
+      : `/videos/${featuredCategorySlug}/${featured.slug}`
+
 
   return (
     <div className="category-block sports-two-col">
@@ -171,7 +179,7 @@ export const SportsArticlesBlockComponent = async ({
           {featured && (
             <article className="sports-feature-post">
               <div className="thumbnail-container">
-                <Link href={`/articles/${featured.slug}`}>
+                <Link href={featuredUrl}>
                   {featured.featuredImage?.url && (
                     <Image
                       src={featured.featuredImage.url}
@@ -184,7 +192,7 @@ export const SportsArticlesBlockComponent = async ({
               </div>
 
               <h3>
-                <Link href={`/articles/${featured.slug}`}>
+                <Link href={featuredUrl}>
                   {featured.title}
                 </Link>
               </h3>
@@ -194,13 +202,49 @@ export const SportsArticlesBlockComponent = async ({
 
         {/* RIGHT COLUMN (Side Articles) */}
         <div className="sports-right">
+          {sideArticles.map((article) => {
+            const categorySlug = getCategorySlug(article)
+
+            const url =
+              article.mediaType === 'image'
+                ? `/articles/${categorySlug}/${article.slug}`
+                : `/videos/${categorySlug}/${article.slug}`
+
+            return (
+              <article
+                key={article.id}
+                className="sports-side-post"
+              >
+                <div className="thumbnail-container">
+                  <Link href={url}>
+                    {article.featuredImage?.url && (
+                      <Image
+                        src={article.featuredImage.url}
+                        alt={article.title}
+                        width={120}
+                        height={80}
+                      />
+                    )}
+                  </Link>
+                </div>
+
+                <h4>
+                  <Link href={url}>
+                    {article.title}
+                  </Link>
+                </h4>
+              </article>
+            )
+          })}
+        </div>
+        {/* <div className="sports-right">
           {sideArticles.map((article) => (
             <article
               key={article.id}
               className="sports-side-post"
             >
               <div className="thumbnail-container">
-                <Link href={`/articles/${article.slug}`}>
+                <Link href={article.mediaType === 'image' ? `/articles/${article.slug}` : `/videos/${article.slug}`}>
                   {article.featuredImage?.url && (
                     <Image
                       src={article.featuredImage.url}
@@ -213,13 +257,13 @@ export const SportsArticlesBlockComponent = async ({
               </div>
 
               <h4>
-                <Link href={`/articles/${article.slug}`}>
+                <Link href={article.mediaType === 'image' ? `/articles/${article.slug}` : `/videos/${article.slug}`}>
                   {article.title}
                 </Link>
               </h4>
             </article>
           ))}
-        </div>
+        </div> */}
 
       </div>
     </div>

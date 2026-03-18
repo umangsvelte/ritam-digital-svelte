@@ -70,7 +70,7 @@ export default async function MediaGridSection({
       articleType: {
         equals:
           typeof rightArticleCategory === 'object'
-            ? rightArticleCategory.id
+            ? rightArticleCategory?.id
             : rightArticleCategory,
       },
       mediaType: {
@@ -85,7 +85,7 @@ export default async function MediaGridSection({
   })
 
   return (
-    <section className="container">
+    <section className="">
       <div className="videos-nation-section">
 
         {/* LEFT */}

@@ -172,11 +172,13 @@ import type { Article } from '@/payload-types'
 type Props = {
   title: string
   category: string | { id: string }
+  categorySlug?: string
 }
 
 export const LatestNationalNewsComponent = async ({
   title,
   category,
+  categorySlug
 }: Props) => {
   const payload = await getPayload({ config })
 
@@ -227,13 +229,21 @@ export const LatestNationalNewsComponent = async ({
                       {article.articleType?.name || 'NATION'}
                     </span>
 
-                    <Link href={`/articles/${article.slug}`}>
+                    <Link href={
+                          article.mediaType === 'image'
+                            ? `/articles/${categorySlug}/${article.slug}`
+                            : `/videos/${categorySlug}/${article.slug}`
+                        }>
                       <img src={image || ''} alt={article.title} />
                     </Link>
                   </div>
 
                   <h3>
-                    <Link href={`/articles/${article.slug}`}>
+                    <Link href={
+                          article.mediaType === 'image'
+                            ? `/articles/${categorySlug}/${article.slug}`
+                            : `/videos/${categorySlug}/${article.slug}`
+                        }>
                       {article.title}
                     </Link>
                   </h3>
@@ -280,13 +290,21 @@ export const LatestNationalNewsComponent = async ({
                   
                   {/* IMAGE WRAPPER */}
                   <div className="rd-side-thumb">
-                    <Link href={`/articles/${article.slug}`}>
+                    <Link href={
+                          article.mediaType === 'image'
+                            ? `/articles/${categorySlug}/${article.slug}`
+                            : `/videos/${categorySlug}/${article.slug}`
+                        }>
                       <img src={image || ''} alt={article.title} />
                     </Link>
                   </div>
 
                   <p>
-                    <Link href={`/articles/${article.slug}`}>
+                    <Link href={
+                          article.mediaType === 'image'
+                            ? `/articles/${categorySlug}/${article.slug}`
+                            : `/videos/${categorySlug}/${article.slug}`
+                        }>
                       {article.title}
                     </Link>
                   </p>

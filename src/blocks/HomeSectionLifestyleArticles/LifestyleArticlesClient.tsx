@@ -154,7 +154,7 @@
 
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 
@@ -165,7 +165,8 @@ type Section = {
   initialArticles: any[]
   totalDocs: number
   limit: number
-  enableLoadMore: boolean
+  enableLoadMore: boolean // acts as enableInfiniteScroll
+  categorySlug: string
 }
 
 type Props = {
@@ -186,14 +187,20 @@ export default function LifestyleArticlesClient({
     }))
   )
 
+  const observerRefs = useRef<(HTMLDivElement | null)[]>([])
+
   const loadMore = async (index: number) => {
+    const section = state[index]
+
+    // جلوگیری duplicate calls
+    if (section.loading) return
+    if (section.articles.length >= section.totalDocs) return
+
     setState(prev =>
       prev.map((s, i) =>
         i === index ? { ...s, loading: true } : s
       )
     )
-
-    const section = state[index]
 
     const params = new URLSearchParams({
       category: section.categoryId,
@@ -222,14 +229,46 @@ export default function LifestyleArticlesClient({
     )
   }
 
+  //  Infinite Scroll Logic
+  useEffect(() => {
+    const observers: IntersectionObserver[] = []
+
+    state.forEach((section, index) => {
+      if (!section.enableLoadMore) return
+
+      const el = observerRefs.current[index]
+      if (!el) return
+
+      const observer = new IntersectionObserver(
+        entries => {
+          if (
+            entries[0].isIntersecting &&
+            !section.loading &&
+            section.articles.length < section.totalDocs
+          ) {
+            loadMore(index)
+          }
+        },
+        {
+          rootMargin: '200px',
+        }
+      )
+
+      observer.observe(el)
+      observers.push(observer)
+    })
+
+    return () => {
+      observers.forEach(o => o.disconnect())
+    }
+  }, [state])
+
   return (
-    <section className="container lifestyle-section">
+    <section className="lifestyle-section py-6">
 
       {/* Header */}
       <div className="section-header-line">
-        <h2 className="section-heading">
-          {title}
-        </h2>
+        <h2 className="section-heading">{title}</h2>
       </div>
 
       {state.map((section, index) => {
@@ -240,71 +279,89 @@ export default function LifestyleArticlesClient({
         return (
           <div key={section.categoryId}>
 
-            {/* Grid */}
-            <div className="lifestyle-grid">
-              {section.articles.map(article => (
-                <article
-                  key={article.id}
-                  className="lifestyle-item"
-                >
-                  {/* <div className="thumbnail-container">
-                    <Link href={`/articles/${article.slug}`}>
-                      {article.featuredImage?.url && (
-                        <Image
-                          src={article.featuredImage.url}
-                          alt={article.title}
-                          width={350}
-                          height={230}
-                        />
-                      )}
-                    </Link>
-                  </div> */}
-                  <div className="thumbnail-container">
-                    <Link href={`/articles/${article.slug}`}>
-                      {(() => {
-                        const imageObj =
-                          article.featuredImage && typeof article.featuredImage === 'object'
-                            ? article.featuredImage
-                            : article.videoThumbnail && typeof article.videoThumbnail === 'object'
-                            ? article.videoThumbnail
-                            : null
-
-                        if (!imageObj?.url) return null
-
-                        return (
-                          <Image
-                            src={imageObj.url}
-                            alt={article.title || 'Thumbnail'}
-                            width={350}
-                            height={230}
-                          />
-                        )
-                      })()}
-                    </Link>
-                  </div>
-
-
-
-                  <h3>
-                    <Link href={`/articles/${article.slug}`}>
-                      {article.title}
-                    </Link>
-                  </h3>
-                </article>
-              ))}
-            </div>
-            
-            {/* Load More Button */}
-            {hasMore && (
-              <div className="text-center mt-6">
-                <button
-                  onClick={() => loadMore(index)}
-                  disabled={section.loading}
-                  className="jeg_block_loadmore inline-block px-[30px] py-[12px] bg-[#f1811d] text-white font-semibold uppercase rounded transition"
-                >
-                  {section.loading ? 'Loading...' : 'Load More'}
-                </button>
+            {/* No articles */}
+            {!section.articles || section.articles.length === 0 ? (
+              <div className="text-center py-10">
+                <p>No articles found</p>
               </div>
+            ) : (
+              <>
+                {/* Grid */}
+                <div className="lifestyle-grid">
+                  {section.articles.map((article) => {
+                    const url =
+                      article.mediaType === 'image'
+                        ? `/articles/${section.categorySlug}/${article.slug}`
+                        : `/videos/${section.categorySlug}/${article.slug}`
+
+                    const imageObj =
+                      article.featuredImage &&
+                      typeof article.featuredImage === 'object'
+                        ? article.featuredImage
+                        : article.videoThumbnail &&
+                          typeof article.videoThumbnail === 'object'
+                        ? article.videoThumbnail
+                        : null
+
+                    return (
+                      <article key={article.id} className="lifestyle-item">
+
+                        <div className="thumbnail-container relative">
+                          <Link href={url}>
+                            {imageObj?.url && (
+                              <div className="relative">
+                                <Image
+                                  src={imageObj.url}
+                                  alt={article.title || 'Thumbnail'}
+                                  width={350}
+                                  height={230}
+                                />
+
+                                {article.mediaType === 'video' && (
+                                  <div className="absolute inset-0 flex items-center justify-center">
+                                    <div className="bg-black/60 rounded-full p-3">
+                                      <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="30"
+                                        height="30"
+                                        fill="white"
+                                        viewBox="0 0 24 24"
+                                      >
+                                        <path d="M8 5v14l11-7z" />
+                                      </svg>
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </Link>
+                        </div>
+
+                        <h3>
+                          <Link href={url}>{article.title}</Link>
+                        </h3>
+                      </article>
+                    )
+                  })}
+                </div>
+
+                {/*  Infinite Scroll Trigger */}
+                {hasMore && (
+                  <div
+                    ref={el => (observerRefs.current[index] = el)}
+                    className="h-10"
+                  />
+                )}
+
+                {/* Loader */}
+                {section.loading && (
+                  <div className="text-center py-4">
+                    <div className="inline-block px-6 py-2 bg-[#ef7f1b] text-white font-semibold rounded-md shadow">
+                      Loading...
+                    </div>
+                  </div>
+                )}
+              </>
             )}
           </div>
         )

@@ -3,6 +3,7 @@ import Link from 'next/link'
 // import '../css/home-page.css'
 import { getPayload } from 'payload'
 import configPromise from '@payload-config'
+import { getCategorySlug } from '@/utils/getCategorySlug'
 
 type Props = {
   title: string
@@ -43,11 +44,44 @@ export default async function TopNewsComponent({
         </div>
 
         <div className="sidebar-news-list">
-            {articles.map((article) => (
+          {articles.map((article) => {
+
+            const categorySlug = getCategorySlug(article)
+
+            const url =
+              article.mediaType === 'image'
+                ? `/articles/${categorySlug}/${article.slug}`
+                : `/videos/${categorySlug}/${article.slug}`
+
+            return (
+              <article className="sidebar-article" key={article.id}>
+                <Link
+                  href={url}
+                  className="d-flex align-items-center gap-3"
+                >
+                  <div className="thumbnail-container">
+                    {article.featuredImage?.url && (
+                      <Image
+                        src={article.featuredImage.url}
+                        alt={article.title}
+                        fill
+                        className="object-cover"
+                      />
+                    )}
+                  </div>
+
+                  <h3 className="article-title">
+                    {article.title}
+                  </h3>
+                </Link>
+              </article>
+            )
+          })}
+            {/* {articles.map((article) => (
             <article className="sidebar-article" key={article.id}>
                 <Link
                 key={article.id}
-                href={`/articles/${article.slug}`}
+                href={article.mediaType === 'image' ? `/articles/${article.slug}` : `/videos/${article.slug}`}
                 className="d-flex align-items-center gap-3"
                 >
                 <div className="thumbnail-container">
@@ -64,7 +98,7 @@ export default async function TopNewsComponent({
                 </h3>
                 </Link>
             </article>
-            ))}
+            ))} */}
         </div>
     </aside>
 

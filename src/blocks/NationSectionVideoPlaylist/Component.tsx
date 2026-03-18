@@ -32,14 +32,14 @@ export const VideoPlaylistComponent = async ({
             equals: 'video',
           },
         },
-        {
-          views: {
-            equals: 0,
-          },
-        },
+        // {
+        //   views: {
+        //     equals: 0,
+        //   },
+        // },
       ],
     },
-    sort: '-publishedDate',
+    sort: ['views', '-publishedDate'],
     limit,
   })
 
@@ -58,6 +58,10 @@ const articles = docs
   if (!articles.length) return null
 
   const mainVideo = articles[0]
+  const categoryName = typeof articleCategory === 'object' ? articleCategory.name : ''
+  const categorySlug = categoryName
+  .toLowerCase()
+  .replace(/\s+/g, '-')
 
   return (
     <VideoPlaylistClient
@@ -67,6 +71,7 @@ const articles = docs
         ? articles[0].articleType.name
         : ''
     }
+    categorySlug={categorySlug}
   />
   )
 }

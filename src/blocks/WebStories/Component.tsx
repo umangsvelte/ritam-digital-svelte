@@ -65,7 +65,7 @@ export default function WebStoriesComponent(props: any) {
 
   return (
     <>
-      <section className="web-stories container">
+      <section className="web-stories ">{/*container */}
         
         {/* Header */}
         <div className="section-header-line">
@@ -78,7 +78,7 @@ export default function WebStoriesComponent(props: any) {
             const firstSlide = story.slides?.[0]
             const mediaUrl =
               typeof firstSlide?.media === 'object'
-                ? firstSlide.media.url
+                ? firstSlide.media.sizes.thumbnail.url
                 : ''
 
             return (

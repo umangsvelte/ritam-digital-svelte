@@ -4,6 +4,30 @@ import { useEffect, useState } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { extractTextFromRichText } from '@/utils/extractRichText'
+import { getCategorySlug } from '@/utils/getCategorySlug'
+
+function getPaginationPages(current: number, total: number) {
+  const pages: (number | string)[] = []
+
+  const delta = 2
+  const rangeStart = Math.max(2, current - delta)
+  const rangeEnd = Math.min(total - 1, current + delta)
+
+  pages.push(1)
+
+  if (rangeStart > 2) pages.push('...')
+
+  for (let i = rangeStart; i <= rangeEnd; i++) {
+    pages.push(i)
+  }
+
+  if (rangeEnd < total - 1) pages.push('...')
+
+  if (total > 1) pages.push(total)
+
+  return pages
+}
+
 
 type Props = {
   title?: string
@@ -22,33 +46,9 @@ export default function SearchResultsBlock({
   const [loading, setLoading] = useState(false)
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(0)
-  
-//   const [hasMore, setHasMore] = useState(false)
   const [searchValue, setSearchValue] = useState(query)
 
   /* Fetch search results */
-//   useEffect(() => {
-//     if (!query) return
-
-//     const fetchResults = async () => {
-//       setLoading(true)
-//       console.log(limit)
-
-//       const res = await fetch(
-//         `/api/search/articles?q=${query}&page=${page}&limit=${limit}`
-//       )
-//       const data = await res.json()
-//       console.log(data)
-
-//       setResults(prev =>
-//         page === 1 ? data.docs : [...prev, ...data.docs]
-//       )
-//       setHasMore(data.totalDocs > page * limit)
-//       setLoading(false)
-//     }
-
-//     fetchResults()
-//   }, [query, page, limit])
 
     useEffect(() => {
     if (!query) return
@@ -122,23 +122,29 @@ export default function SearchResultsBlock({
               ? item.featuredImage?.url
               : item.videoThumbnail?.url
 
+          const categorySlug = getCategorySlug(item)        
+          const url =
+            item.mediaType === 'image'
+              ? `/articles/${categorySlug}/${item.slug}`
+              : `/videos/${categorySlug}/${item.slug}`
+
           return (
             <article
               key={item.id}
-              className="flex gap-6 py-6"
+              className="flex flex-col md:flex-row gap-6 py-6"
             >
               {/* Image */}
               {image && (
                 <Link
-                  href={`/articles/${item.slug}`}
-                  className="relative w-[260px] shrink-0"
+                  href={url}
+                  className="relative w-full md:w-[260px] shrink-0"
                 >
                   <img
                     src={image}
                     alt={item.title}
-                    className="w-full h-[160px] object-cover"
+                    className="w-full h-[200px] md:h-[160px] object-cover"
                   />
-
+                  
                   {item.mediaType === 'video' && (
                     <span className="absolute inset-0 flex items-center justify-center bg-black/30">
                       <svg
@@ -158,25 +164,18 @@ export default function SearchResultsBlock({
               <div className="flex-1">
                 <h3 className="text-xl font-semibold leading-snug">
                   <Link
-                    href={`/articles/${item.slug}`}
+                    href={url}
                     className="hover:text-[#ef7f1b]"
                   >
                     {item.title}
                   </Link>
                 </h3>
 
-                {/* {item.excerpt?.root && (
-                  <p className="mt-2 text-gray-600 text-sm leading-relaxed">
-                    {
-                      item.excerpt.root.children?.[0]?.children?.[0]?.text
-                    }
-                  </p>
-                )} */}
                 {item.excerpt && typeof item.excerpt === 'object' && 'root' in item.excerpt && (
-                    <p className= 'line-clamp-2'>
-                      {extractTextFromRichText(item.excerpt)}
-                    </p>
-                  )}
+                  <p className='line-clamp-2 mt-2'>
+                    {extractTextFromRichText(item.excerpt)}
+                  </p>
+                )}
               </div>
             </article>
           )
@@ -186,25 +185,34 @@ export default function SearchResultsBlock({
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex justify-center gap-2 mt-10 flex-wrap">
-            {Array.from({ length: totalPages }).map((_, i) => {
-            const pageNumber = i + 1
+
+          {getPaginationPages(page, totalPages).map((p, index) => {
+
+            if (p === '...') {
+              return (
+                <span key={index} className="px-2 py-2">
+                  ...
+                </span>
+              )
+            }
+
             return (
-                <button
-                key={pageNumber}
-                onClick={() => setPage(pageNumber)}
+              <button
+                key={p}
+                onClick={() => setPage(p as number)}
                 className={`px-4 py-2 border text-sm font-semibold
-                    ${
-                    page === pageNumber
-                        ? 'bg-[#ef7f1b] text-white border-[#ef7f1b]'
-                        : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'
-                    }`}
-                >
-                {pageNumber}
-                </button>
+                ${
+                  page === p
+                    ? 'bg-[#ef7f1b] text-white border-[#ef7f1b]'
+                    : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'
+                }`}
+              >
+                {p}
+              </button>
             )
-            })}
+          })}
         </div>
-)}
+      )}
 
     </section>
   )

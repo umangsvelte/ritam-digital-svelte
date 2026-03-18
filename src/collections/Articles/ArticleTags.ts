@@ -10,6 +10,18 @@ export const Tags: CollectionConfig = {
 
   access: {
     read: () => true,
+    
+    create: ({ req }) => {
+      return req.user?.role === 'admin'
+    },
+
+    update: ({ req }) => {
+      return req.user?.role === 'admin'
+    },
+
+    delete: ({ req }) => {
+      return req.user?.role === 'admin'
+    },
   },
 
   fields: [

@@ -74,6 +74,7 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 import Image from 'next/image'
 import Link from 'next/link'
+import { getCategorySlug } from '@/utils/getCategorySlug'
 
 export const WorldArticlesBlockComponent = async ({
   title,
@@ -119,13 +120,47 @@ export const WorldArticlesBlockComponent = async ({
 
       {/* Posts */}
       <div className="category-posts">
-        {articlesRes.docs.map((article) => (
+        {articlesRes.docs.map((article) => {
+          const categorySlug = getCategorySlug(article)
+
+          const url =
+            article.mediaType === 'image'
+              ? `/articles/${categorySlug}/${article.slug}`
+              : `/videos/${categorySlug}/${article.slug}`
+
+          return (
+            <article
+              key={article.id}
+              className="category-post-item"
+            >
+              <h3>
+                <Link href={url}>
+                  {article.title}
+                </Link>
+              </h3>
+
+              <div className="thumbnail-container">
+                {article.featuredImage?.url && (
+                  <Link href={url}>
+                    <Image
+                      src={article.featuredImage.url}
+                      alt={article.title}
+                      width={200}
+                      height={133}
+                    />
+                  </Link>
+                )}
+              </div>
+            </article>
+          )
+        })}
+        {/* {articlesRes.docs.map((article) => (
           <article
             key={article.id}
             className="category-post-item"
           >
             <h3>
-              <Link href={`/articles/${article.slug}`}>
+              <Link href={article.mediaType === 'image' ? `/articles/${article.slug}` : `/videos/${article.slug}`}>
                 {article.title}
               </Link>
             </h3>
@@ -141,7 +176,7 @@ export const WorldArticlesBlockComponent = async ({
               )}
             </div>
           </article>
-        ))}
+        ))} */}
       </div>
     </div>
   )

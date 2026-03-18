@@ -593,6 +593,7 @@ export interface Page {
   publishedAt?: string | null;
   slug?: string | null;
   slugLock?: boolean | null;
+  fullSlug?: string | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -1180,11 +1181,30 @@ export interface Form {
 export interface Article {
   id: number;
   title: string;
+  subtitle?: string | null;
   slug: string;
   mediaType: 'image' | 'video';
   featuredImage?: (number | null) | Media;
   featuredVideoUrl?: string | null;
   videoThumbnail?: (number | null) | Media;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Automatically generated from content (first 400 characters)
+   */
   excerpt?: {
     root: {
       type: string;
@@ -1200,8 +1220,7 @@ export interface Article {
     };
     [k: string]: unknown;
   } | null;
-  publishedDate: string;
-  author_name?: string | null;
+  publishedDate?: string | null;
   author?: (number | null) | User;
   tags?: (number | ArticleTag)[] | null;
   views?: number | null;
@@ -1214,7 +1233,7 @@ export interface Article {
     image?: (number | null) | Media;
     description?: string | null;
   };
-  articleType: number | ArticleCategory;
+  articleType: (number | ArticleCategory)[];
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -1962,6 +1981,7 @@ export interface PagesSelect<T extends boolean = true> {
   publishedAt?: T;
   slug?: T;
   slugLock?: T;
+  fullSlug?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -2235,14 +2255,15 @@ export interface ArticleCategoriesSelect<T extends boolean = true> {
  */
 export interface ArticlesSelect<T extends boolean = true> {
   title?: T;
+  subtitle?: T;
   slug?: T;
   mediaType?: T;
   featuredImage?: T;
   featuredVideoUrl?: T;
   videoThumbnail?: T;
+  content?: T;
   excerpt?: T;
   publishedDate?: T;
-  author_name?: T;
   author?: T;
   tags?: T;
   views?: T;

@@ -100,7 +100,7 @@ export default function StoryViewer({
         style={{ backgroundImage: `url(${mediaUrl})` }}
       />
 
-      <div className="story-container">
+      <div className="story-container relative">
         {/* Story index */}
         <div className="story-index">
           {storyIndex + 1} / {stories.length}
@@ -149,6 +149,12 @@ export default function StoryViewer({
             playsInline
           />
         )}
+
+        {/* tap based slide change majorly used on mobile*/}
+        <div className="story-touch">
+          <div className="left-zone" onClick={prev}></div>
+          <div className="right-zone" onClick={next}></div>
+        </div>
 
         {/* Caption */}
         {slide.caption && (

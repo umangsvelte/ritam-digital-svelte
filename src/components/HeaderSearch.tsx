@@ -82,6 +82,7 @@
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { getCategorySlug } from '@/utils/getCategorySlug'
 
 export default function HeaderSearch({ onClose }: { onClose: () => void }) {
   const [query, setQuery] = useState('')
@@ -144,11 +145,16 @@ export default function HeaderSearch({ onClose }: { onClose: () => void }) {
               item.mediaType === 'image'
                 ? item.featuredImage?.url
                 : item.videoThumbnail?.url
+            const categorySlug = getCategorySlug(item)        
+            const url =
+              item.mediaType === 'image'
+                ? `/articles/${categorySlug}/${item.slug}`
+                : `/videos/${categorySlug}/${item.slug}`
 
             return (
               <Link
                 key={item.id}
-                href={`/articles/${item.slug}`}
+                href={url}
                 onClick={onClose}
                 className="search-item"
               >

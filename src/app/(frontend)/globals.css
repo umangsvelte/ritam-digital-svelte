@@ -108,10 +108,10 @@ span.richtext-colored em {
   color: inherit;
 }
 
-.payload-richtext.mx-auto.prose a {
+/* .payload-richtext.mx-auto.prose a {
   display: block;
   word-wrap: break-word;
-}
+} */
 
 /* assets/css/common.css */
 
@@ -244,6 +244,90 @@ img {
 }
 
 /* header */
+/* Overlay */
+.search-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 9999;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 100px; /* below header */
+}
+
+/* Search box */
+.header-search-dropdown {
+  background: #fff;
+  width: 100%;
+  max-width: 720px;
+  border-radius: 6px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+/* Input */
+.header-search-dropdown input {
+  width: 100%;
+  padding: 16px 18px;
+  font-size: 16px;
+  border: none;
+  outline: none;
+  background: #fff;
+  color: #111;
+  caret-color: #111;
+}
+
+.header-search-dropdown input::placeholder {
+  color: #999;
+}
+/* Results */
+.search-results {
+  max-height: 420px;
+  overflow-y: auto;
+}
+
+/* Result item */
+.search-item {
+  display: flex;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f1f1f1;
+  text-decoration: none;
+  color: #111;
+}
+
+.search-item:hover {
+  background: #f9f9f9;
+}
+
+.search-item img {
+  width: 60px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.search-loading {
+  padding: 14px;
+  font-size: 14px;
+  color: #666;
+}
+.search-view-all {
+  width: 100%;
+  padding: 10px;
+  margin-top: 8px;
+  text-align: center;
+  font-weight: 600;
+  background: #f5f5f5;
+  cursor: pointer;
+  color: #ef7f1b;
+}
+
+.search-view-all:hover {
+  background: #ef7f1b;
+  color: #fff;
+}
 /* Header */
 .site-header {
   position: sticky !important;
@@ -935,6 +1019,7 @@ img {
   padding: 2px;
   color: #fff;
   width: 100%;
+  height: 600px;
 }
 
 .rt-video-header h2 {
@@ -948,10 +1033,12 @@ img {
 /* Main Video */
 .rt-main-video {
   position: relative;
+  height: 200px;
 }
 
 .rt-video-thumb {
   position: relative;
+  height: 200px;
 }
 
 .rt-video-thumb img {
@@ -1385,7 +1472,8 @@ img {
 
 .lifestyle-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  /* grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); */
+  grid-template-columns: repeat(3, 1fr);
   gap: 20px;
 }
 
@@ -1396,7 +1484,7 @@ img {
 }
 
 .lifestyle-item .thumbnail-container {
-    height: 150px;
+    height: 190px;
     margin-bottom: 10px;
     overflow: hidden;
 }
@@ -1447,7 +1535,11 @@ img {
 }
 
 
-
+@media (max-width: 1024px) {
+  .lifestyle-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
 
 
 /* Responsive Updates */
@@ -1652,7 +1744,22 @@ img {
   width: 100%;
   height: 100%;
   object-fit: contain;
+  position: relative;
+  z-index: 1;
 }
+
+.story-touch {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+}
+
+.left-zone,
+.right-zone {
+  flex: 1;
+}
+
 
 /* ===============================
    CAPTION (Bottom Overlay)
@@ -1692,11 +1799,11 @@ img {
 }
 
 .story-arrow.left {
-  left: 10px;
+  left: 650px;
 }
 
 .story-arrow.right {
-  right: 10px;
+  right: 650px;
 }
 
 /* ===============================
@@ -1773,6 +1880,9 @@ img {
    MOBILE OPTIMIZATION
 ================================ */
 @media (max-width: 768px) {
+  .lifestyle-grid {
+    grid-template-columns: repeat(1, 1fr);
+  }
   .story-container {
     max-width: 100%;
   }
@@ -2083,7 +2193,7 @@ img {
 .rd-nation-container {
   max-width: 1200px;
   margin: auto;
-  padding: 0 15px;
+  /* padding: 0 15px; */
 }
 
 
@@ -2600,6 +2710,16 @@ img {
   margin-bottom: 10px;
 }
 
+.article-subtitle {
+  font-size: 16px;
+  line-height: 1.6;
+  color: #555;
+  font-weight: 300;
+  margin-top: 10px;
+  margin-bottom: 20px;
+  max-width: 900px;
+}
+
 .meta-line {
     display: flex;
     align-items: center;
@@ -2800,10 +2920,8 @@ img {
   align-items: center;
   flex-wrap: wrap;
   gap: 8px;
-  margin-top: 30px; /* Add space above tags */
+  margin-top: 20px; /* Add space above tags */
   margin-bottom: 20px;
-  padding-top: 20px; /* Optional: add padding */
-  border-top: 1px solid #eee; /* Optional: separator line */
   font-size: 14px;
 }
 

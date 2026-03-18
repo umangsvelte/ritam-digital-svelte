@@ -85,6 +85,7 @@ import Link from 'next/link'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import Image from 'next/image'
+import { getCategorySlug } from '@/utils/getCategorySlug'
 
 type Props = {
   title: string
@@ -139,9 +140,16 @@ export const HomeSectionBusinessOpinionComponent = async ({
               ? article.featuredImage?.url
               : ''
 
+          const categorySlug = getCategorySlug(article)
+          
+          const url =
+            article.mediaType === 'image'
+              ? `/articles/${categorySlug}/${article.slug}`
+              : `/videos/${categorySlug}/${article.slug}`
+
           return (
             <div key={article.id} className="news-card">
-              <Link href={`/articles/${article.slug}`}>
+              <Link href={url}>
                 <div className="news-card-image-container">
                   {imageUrl && (
                     <Image
@@ -162,7 +170,7 @@ export const HomeSectionBusinessOpinionComponent = async ({
 
 
               <h3>
-                <Link href={`/articles/${article.slug}`}>
+                <Link href={url}>
                   {article.title}
                 </Link>
               </h3>
@@ -181,7 +189,7 @@ export const HomeSectionBusinessOpinionComponent = async ({
 
           return (
             <div key={article.id} className="news-card">
-              <Link href={`/articles/${article.slug}`}>
+              <Link href={article.mediaType === 'image' ? `/articles/${article.slug}` : `/videos/${article.slug}`}>
                 <div className="news-card-image-container">
                   {imageUrl && (
                     <Image
@@ -201,7 +209,7 @@ export const HomeSectionBusinessOpinionComponent = async ({
               </Link>
 
               <h3>
-                <Link href={`/articles/${article.slug}`}>
+                <Link href={article.mediaType === 'image' ? `/articles/${article.slug}` : `/videos/${article.slug}`}>
                   {article.title}
                 </Link>
               </h3>

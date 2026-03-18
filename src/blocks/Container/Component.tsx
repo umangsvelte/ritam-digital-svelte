@@ -7,7 +7,7 @@ export const ContainerBlockComponent = ({
   rightColumn,
 }: any) => {
   return (
-    <section className="mx-auto px-4 py-6">
+    <section className="mx-auto  py-6"> {/* px-4*/}
 
       {/* FULL WIDTH */}
       {layout === 'full' && (

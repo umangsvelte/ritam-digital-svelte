@@ -53,7 +53,51 @@
 
 // export default ArticleItem
 
+// import Link from 'next/link'
+// import { getCategorySlug } from '@/utils/getCategorySlug'
+
+// const ArticleItem = ({ articles, articleCategory }) => {
+//   if (!articles?.length) return null
+
+//   return (
+//     <>
+//       <div className="section-header-line">
+//         <h2 className="section-heading">
+//           {articleCategory}
+//         </h2>
+//       </div>
+
+//       <div className="nation-list">
+//         {articles.map(article => (
+          
+//           <article key={article.id} className="nation-item">
+//             <div className="thumbnail-container">
+//               <img
+//                 src={article.featuredImage?.url}
+//                 alt={article.title}
+//                 width={120}
+//                 height={86}
+//               />
+//             </div>
+
+//             <div className="content">
+//               <h3>
+//                 <Link href={article.mediaType === 'image' ? `/articles/${article.slug}` : `/videos/${article.slug}`}>
+//                   {article.title}
+//                 </Link>
+//               </h3>
+//             </div>
+//           </article>
+//         ))}
+//       </div>
+//     </>
+//   )
+// }
+
+// export default ArticleItem
+
 import Link from 'next/link'
+import { getCategorySlug } from '@/utils/getCategorySlug'
 
 const ArticleItem = ({ articles, articleCategory }) => {
   if (!articles?.length) return null
@@ -67,26 +111,39 @@ const ArticleItem = ({ articles, articleCategory }) => {
       </div>
 
       <div className="nation-list">
-        {articles.map(article => (
-          <article key={article.id} className="nation-item">
-            <div className="thumbnail-container">
-              <img
-                src={article.featuredImage?.url}
-                alt={article.title}
-                width={120}
-                height={86}
-              />
-            </div>
+        {articles.map(article => {
 
-            <div className="content">
-              <h3>
-                <Link href={`/articles/${article.slug}`}>
-                  {article.title}
+          // get category and create slug for routing
+          const categorySlug = getCategorySlug(article)
+
+          const url =
+            article.mediaType === 'image'
+              ? `/articles/${categorySlug}/${article.slug}`
+              : `/videos/${categorySlug}/${article.slug}`
+
+          return (
+            <article key={article.id} className="nation-item">
+              <div className="thumbnail-container">
+                <Link href={url}>
+                  <img
+                    src={article.featuredImage?.url}
+                    alt={article.title}
+                    width={120}
+                    height={86}
+                  />
                 </Link>
-              </h3>
-            </div>
-          </article>
-        ))}
+              </div>
+
+              <div className="content">
+                <h3>
+                  <Link href={url}>
+                    {article.title}
+                  </Link>
+                </h3>
+              </div>
+            </article>
+          )
+        })}
       </div>
     </>
   )
