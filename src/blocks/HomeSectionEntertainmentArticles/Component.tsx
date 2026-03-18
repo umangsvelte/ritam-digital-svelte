@@ -138,7 +138,7 @@ export const EntertainmentArticlesBlockComponent = async ({
       {/* Posts */}
       <div className="category-posts">
         {docs.map((article) => {
-            const categorySlug = getCategorySlug(article)
+            const categorySlug = getCategorySlug(article, categoryId)
 
             const url =
               article.mediaType === 'image'

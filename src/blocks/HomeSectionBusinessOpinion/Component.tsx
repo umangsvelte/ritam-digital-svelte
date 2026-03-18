@@ -122,6 +122,7 @@ export const HomeSectionBusinessOpinionComponent = async ({
     },
     sort: '-publishedDate',
     limit,
+    depth: 1,
   })
 
   if (!res?.docs || res.docs.length === 0) return null
@@ -140,12 +141,20 @@ export const HomeSectionBusinessOpinionComponent = async ({
               ? article.featuredImage?.url
               : ''
 
-          const categorySlug = getCategorySlug(article)
+          const categorySlug = getCategorySlug(article, categoryId)
           
           const url =
             article.mediaType === 'image'
               ? `/articles/${categorySlug}/${article.slug}`
               : `/videos/${categorySlug}/${article.slug}`
+
+          const matchedCategory =
+            Array.isArray(article.articleType)
+              ? article.articleType.find(
+                  (cat: any) =>
+                    typeof cat === 'object' && cat.id === categoryId
+                )
+              : null
 
           return (
             <div key={article.id} className="news-card">
@@ -163,7 +172,7 @@ export const HomeSectionBusinessOpinionComponent = async ({
                     />
                   )}
                   <span className="tag">
-                    {article?.articleType?.name ?? 'BUSINESS'}
+                    {matchedCategory?.name ?? 'BUSINESS'}
                   </span>
                 </div>
               </Link>
@@ -187,9 +196,24 @@ export const HomeSectionBusinessOpinionComponent = async ({
               ? article.featuredImage?.url
               : ''
 
+          const categorySlug = getCategorySlug(article, categoryId)
+          
+          const url =
+            article.mediaType === 'image'
+              ? `/articles/${categorySlug}/${article.slug}`
+              : `/videos/${categorySlug}/${article.slug}`
+
+          const matchedCategory =
+            Array.isArray(article.articleType)
+              ? article.articleType.find(
+                  (cat: any) =>
+                    typeof cat === 'object' && cat.id === categoryId
+                )
+              : null
+
           return (
             <div key={article.id} className="news-card">
-              <Link href={article.mediaType === 'image' ? `/articles/${article.slug}` : `/videos/${article.slug}`}>
+              <Link href={url}>
                 <div className="news-card-image-container">
                   {imageUrl && (
                     <Image
@@ -203,13 +227,13 @@ export const HomeSectionBusinessOpinionComponent = async ({
                     />
                   )}
                   <span className="tag">
-                    {article?.articleType?.name ?? 'BUSINESS'}
+                    {matchedCategory?.name ?? 'BUSINESS'}
                   </span>
                 </div>
               </Link>
 
               <h3>
-                <Link href={article.mediaType === 'image' ? `/articles/${article.slug}` : `/videos/${article.slug}`}>
+                <Link href={url}>
                   {article.title}
                 </Link>
               </h3>

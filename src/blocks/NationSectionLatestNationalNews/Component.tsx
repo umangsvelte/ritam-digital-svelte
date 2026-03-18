@@ -219,14 +219,22 @@ export const LatestNationalNewsComponent = async ({
                   ? article.featuredImage?.url
                   : ''
 
+              const matchedCategory =
+                Array.isArray(article.articleType)
+                  ? article.articleType.find(
+                      (cat: any) =>
+                        typeof cat === 'object' && cat.id === categoryId
+                    )
+                  : null
+
               return (
                 <article
                   key={article.id}
                   className="rd-nation-card"
                 >
                   <div className="rd-nation-image">
-                    <span className="rd-nation-tag">
-                      {article.articleType?.name || 'NATION'}
+                    <span className="tag">
+                      {matchedCategory?.name ?? 'NATION'}
                     </span>
 
                     <Link href={

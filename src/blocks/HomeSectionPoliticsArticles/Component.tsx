@@ -139,7 +139,7 @@ export const PoliticsArticlesBlockComponent = async ({
       {/* Posts Grid */}
       <div className="category-posts two-column-grid">
         {res.docs.map((article) => {
-          const categorySlug = getCategorySlug(article)
+          const categorySlug = getCategorySlug(article, categoryId)
 
           const url =
             article.mediaType === 'image'

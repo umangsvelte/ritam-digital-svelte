@@ -173,24 +173,39 @@ export default function StoryViewer({
           <div className="share-modal" onClick={(e) => e.stopPropagation()}>
             <div className="share-header">
               <span>Share</span>
-              <button onClick={() => setShowShare(false)}>✕</button>
+              <button
+                className="share-close-btn"
+                onClick={() => setShowShare(false)}
+              >
+                ✕
+              </button>
             </div>
 
-            <button onClick={copyLink}>🔗 Get Link</button>
+            <button onClick={copyLink} className="share-option share-link">
+              <span>🔗</span> Get Link
+            </button>
+
             <a
               href={`https://twitter.com/intent/tweet?url=${storyUrl}`}
               target="_blank"
+              className="share-option share-twitter"
             >
-              ❌ Twitter (X)
+              <span>❌</span> Twitter (X)
             </a>
+
             <a
               href={`https://www.linkedin.com/sharing/share-offsite/?url=${storyUrl}`}
               target="_blank"
+              className="share-option share-linkedin"
             >
-              🔵 LinkedIn
+              <span>🔵</span> LinkedIn
             </a>
-            <a href={`mailto:?body=${storyUrl}`}>
-              ✉️ Email
+
+            <a
+              href={`mailto:?body=${storyUrl}`}
+              className="share-option share-email"
+            >
+              <span>✉️</span> Email
             </a>
           </div>
         </div>

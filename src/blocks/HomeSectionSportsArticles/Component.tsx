@@ -154,7 +154,7 @@ export const SportsArticlesBlockComponent = async ({
   if (!res.docs.length) return null
 
   const [featured, ...sideArticles] = res.docs
-  const featuredCategorySlug = getCategorySlug(featured)
+  const featuredCategorySlug = getCategorySlug(featured, categoryId)
 
   const featuredUrl =
     featured.mediaType === 'image'
@@ -203,7 +203,7 @@ export const SportsArticlesBlockComponent = async ({
         {/* RIGHT COLUMN (Side Articles) */}
         <div className="sports-right">
           {sideArticles.map((article) => {
-            const categorySlug = getCategorySlug(article)
+            const categorySlug = getCategorySlug(article, categoryId)
 
             const url =
               article.mediaType === 'image'
